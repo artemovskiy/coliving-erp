@@ -16,11 +16,20 @@ export interface AccommodationData {
   label: string;
 }
 
+export interface SlotWithAccommodations {
+  id: number;
+  name: string;
+  accommodations: AccommodationData[]
+}
+
+export interface RoomWithSlots {
+  id: number;
+  name: string;
+  slots: SlotWithAccommodations[];
+}
+
 export interface AccommodationsSheet {
   months: ASMonth[];
   dates: Date[]
-  slots: {
-    name: string;
-    accommodations: AccommodationData[]
-  }[]
+  rooms: RoomWithSlots[];
 }

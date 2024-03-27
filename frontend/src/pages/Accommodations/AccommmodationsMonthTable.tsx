@@ -7,6 +7,7 @@ import {
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { Link } from 'react-router-dom';
+import React from 'react';
 import { AccommodationData, AccommodationsSheet } from './types';
 
 interface AccommodationCell {
@@ -95,6 +96,7 @@ function AccommodationsMonthTable({ data, interval }: { data: AccommodationsShee
         <Table size="small">
           <TableHead>
             <TableRow>
+              <TableCell rowSpan={2} sx={{ borderRight: 1 }}>room</TableCell>
               <TableCell rowSpan={2} sx={{ borderRight: 1 }}>slot</TableCell>
               {
                 data.months.map((i) => (
@@ -112,7 +114,7 @@ function AccommodationsMonthTable({ data, interval }: { data: AccommodationsShee
               {
                 data.dates.map((i) => (
                   <TableCell
-                    sx={{ borderRight: 1 }}
+                    sx={{ borderRight: 1, padding: '1px' }}
                     key={i.toISOString()}
                   >
                     {i.toLocaleString('default', { day: '2-digit' })}
@@ -123,6 +125,41 @@ function AccommodationsMonthTable({ data, interval }: { data: AccommodationsShee
           </TableHead>
           <TableBody>
             {
+              data.rooms.map((room) => (
+                <React.Fragment key={room.id}>
+                  {
+                    room.slots.map((slot, index) => {
+                      const accommodationCells = prepareAccommodationCells(
+                        interval.start as Date,
+                        interval.end as Date,
+                        slot.accommodations,
+                      );
+                      return (
+                        <TableRow key={slot.name}>
+                          { index === 0 && <TableCell rowSpan={room.slots.length}>{room.name}</TableCell>}
+                          <TableCell scope="row" sx={{ borderRight: 1 }}>{slot.name}</TableCell>
+                          {
+                          accommodationCells.map((i) => {
+                            if (i.isEmpty) {
+                              return <TableCell key={i.label} colSpan={i.length} aria-labelledby="empty" />;
+                            }
+                            return (
+                              <TableCell key={i.label} colSpan={i.length}>
+                                <Box sx={{ bgcolor: 'primary.main', width: '100%' }}>
+                                  <Link to={`preview/${i.label}`}>{i.label}</Link>
+                                </Box>
+                              </TableCell>
+                            );
+                          })
+                        }
+                        </TableRow>
+                      );
+                    })
+                  }
+                </React.Fragment>
+              ))
+            }
+            {/* {
               data.slots.map((slot) => {
                 const accommodationCells = prepareAccommodationCells(
                   interval.start as Date,
@@ -149,7 +186,7 @@ function AccommodationsMonthTable({ data, interval }: { data: AccommodationsShee
                   </TableRow>
                 );
               })
-            }
+            } */}
           </TableBody>
         </Table>
       </TableContainer>

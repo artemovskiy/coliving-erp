@@ -3,44 +3,11 @@ import { Box } from '@mui/material';
 import {
   differenceInDays, eachDayOfInterval, eachMonthOfInterval, endOfMonth,
 } from 'date-fns';
-import { Accommodation, Slot } from 'coliving-erp-api-client';
-import { ASMonth, AccommodationsSheet } from './types';
+import { Accommodation } from 'coliving-erp-api-client';
+import { ASMonth, RoomWithSlots } from './types';
 import AccommodationsMonthTable from './AccommmodationsMonthTable';
 import { useApi } from '../../providers/ApiClient';
-
-// eslint-disable-next-line max-len
-const placeAccommodations = (startDate: Date, endDate: Date, slots: Array<{ name: string, accommodations: Accommodation[] }>): AccommodationsSheet => {
-  const interval = {
-    start: startDate,
-    end: endDate,
-  };
-  const monthStarts = eachMonthOfInterval(interval);
-  const months: ASMonth[] = monthStarts.map((i) => {
-    const month = i.toLocaleString('default', { month: 'long' });
-    const endOf = endOfMonth(i);
-    const length = differenceInDays(endOf, i) + 1;
-    return {
-      name: month,
-      isoFirstDay: i.toISOString(),
-      length,
-    };
-  });
-
-  const dates = eachDayOfInterval(interval);
-
-  return {
-    months,
-    dates,
-    slots: slots.map(({ name, accommodations }) => ({
-      name,
-      accommodations: accommodations.map((j) => ({
-        label: `${j.id} ${j.resident?.firstName}`,
-        startDate: new Date(j.start ?? ''),
-        endDate: new Date(j.endDate ?? ''),
-      })),
-    })),
-  };
-};
+import { useApiFetch } from '../../api/useApiFetch';
 
 function Accommodations() {
   const start = new Date(2024, 1, 1);
@@ -50,7 +17,7 @@ function Accommodations() {
   end.setDate((end.getDate() - 1));
   const [endDate] = useState(end);
 
-  const { accommodationsApi, slotsApi } = useApi();
+  const { accommodationsApi, slotsApi, roomsApi } = useApi();
 
   const [accommodations, setAccommodations] = useState<Accommodation[] | undefined>();
   useEffect(() => {
@@ -65,31 +32,61 @@ function Accommodations() {
     return () => { cancelled = true; };
   }, [accommodationsApi]);
 
-  const [slots, setSlots] = useState<Slot[] | undefined>();
-  useEffect(() => {
-    let cancelled = false;
-    slotsApi.listSlots()
-      .then(({ data }) => {
-        if (!cancelled) {
-          setSlots(data);
-        }
-      });
-
-    return () => { cancelled = true; };
-  }, [slotsApi]);
+  const [rooms] = useApiFetch(() => roomsApi.listRooms(), [roomsApi]);
+  const [slots] = useApiFetch(() => slotsApi.listSlots(), [slotsApi]);
 
   const accommodationsSheet = useMemo(() => {
-    if (slots === undefined || accommodations === undefined) {
+    if (rooms === undefined || slots === undefined || accommodations === undefined) {
       return undefined;
     }
-    const slotsWithAccommodations: Array<{ name: string, accommodations: Accommodation[] }> = slots.map((slot) => {
-      const slotAccommodations = accommodations.filter((i) => i.slot?.id === slot.id);
+
+    const interval = {
+      start: startDate,
+      end: endDate,
+    };
+    const monthStarts = eachMonthOfInterval(interval);
+    const months: ASMonth[] = monthStarts.map((i) => {
+      const month = i.toLocaleString('default', { month: 'long' });
+      const endOf = endOfMonth(i);
+      const length = differenceInDays(endOf, i) + 1;
       return {
-        name: slot.label ?? 'unknown',
-        accommodations: slotAccommodations,
+        name: month,
+        isoFirstDay: i.toISOString(),
+        length,
       };
     });
-    return placeAccommodations(startDate, endDate, slotsWithAccommodations);
+
+    const dates = eachDayOfInterval(interval);
+
+    const data: RoomWithSlots[] = rooms.map((room) => {
+      const roomSlots = slots.filter((i) => i.room?.id === room.id).map((slot) => {
+        const slotAccommodations = accommodations.filter((i) => i.slot?.id === slot.id);
+        return ({
+          id: slot.id!,
+          name: slot.label!,
+          accommodations: slotAccommodations.map((j) => ({
+            label: `${j.id} ${j.resident?.firstName}`,
+            startDate: new Date(j.start ?? ''),
+            endDate: new Date(j.endDate ?? ''),
+          })),
+        });
+      });
+      return {
+        id: room.id!,
+        name: room.name!,
+        slots: roomSlots,
+      };
+    });
+
+    return {
+      months,
+      dates,
+      rooms: data,
+      // slots: slotsWithAccommodations.map(({ name, accommodations }) => ({
+      //   name,
+      //   accommodations: accommodations,
+      // })),
+    };
   }, [startDate, endDate, slots, accommodations]);
 
   return (

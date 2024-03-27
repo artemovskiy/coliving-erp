@@ -47,7 +47,7 @@ function NewAccommodation() {
       ...res,
       data: res.data.filter((i) => i.room?.id === roomId),
     }));
-  }, [houseId]);
+  }, [houseId, roomId]);
   const slotOptions = useMemo(() => slots ?? [], [slots]);
   const [slotId, setSlotId] = useState<number | undefined>();
   useEffect(() => setSlotId(undefined), [roomId]);
