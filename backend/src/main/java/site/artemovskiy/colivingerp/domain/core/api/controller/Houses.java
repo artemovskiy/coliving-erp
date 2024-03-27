@@ -8,6 +8,7 @@ import site.artemovskiy.colivingerp.domain.core.model.House;
 import site.artemovskiy.colivingerp.domain.core.repository.HouseRepository;
 
 import java.util.Collection;
+import java.util.Optional;
 
 @RestController
 @RequestMapping(path = "/house")
@@ -29,5 +30,12 @@ public class Houses {
         houseRepository.save(house);
 
         return ResponseEntity.ok(house);
+    }
+
+    @GetMapping("{id}")
+    public ResponseEntity<House> get(@PathVariable int id) {
+        Optional<House> house = houseRepository.findById(id);
+        return house.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+
     }
 }

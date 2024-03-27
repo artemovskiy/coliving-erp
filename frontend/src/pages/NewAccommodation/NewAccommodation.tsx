@@ -21,31 +21,31 @@ function NewAccommodation() {
     residentsApi, housesApi, roomsApi, slotsApi, accommodationsApi,
   } = useApi();
 
-  const [residents, residentsPending] = useApiFetch<Resident[], []>(() => residentsApi.listResidents(), []);
+  const [residents, residentsPending] = useApiFetch<Resident[]>(() => residentsApi.listResidents(), []);
   const [residentId, setResidentId] = useState<Resident | undefined>();
-  const [houses, housesPending] = useApiFetch<House[], []>(() => housesApi.listHouses(), []);
+  const [houses, housesPending] = useApiFetch<House[]>(() => housesApi.listHouses(), []);
   const [houseId, setHouseId] = useState<number | undefined>();
 
-  const [rooms, roomsPending] = useApiFetch<Room[] | undefined, [number | undefined]>((hId: number | undefined) => {
-    if (hId === undefined) {
+  const [rooms, roomsPending] = useApiFetch<Room[] | undefined>(() => {
+    if (houseId === undefined) {
       return Promise.resolve({ data: [] } as unknown as AxiosResponse<Room[]>);
     }
     return roomsApi.listRooms().then((res) => ({
       ...res,
-      data: res.data.filter((i) => i.house?.id === hId),
+      data: res.data.filter((i) => i.house?.id === houseId),
     }));
   }, [houseId]);
   const roomOptions = useMemo(() => rooms ?? [], [rooms]);
   const [roomId, setRoomId] = useState<number | undefined>();
   useEffect(() => setRoomId(undefined), [houseId]);
 
-  const [slots, slotsPending] = useApiFetch<Slot[] | undefined, [number | undefined]>((rId: number | undefined) => {
-    if (rId === undefined) {
+  const [slots, slotsPending] = useApiFetch<Slot[] | undefined>(() => {
+    if (roomId === undefined) {
       return Promise.resolve({ data: [] } as unknown as AxiosResponse<Room[]>);
     }
     return slotsApi.listSlots().then((res) => ({
       ...res,
-      data: res.data.filter((i) => i.room?.id === rId),
+      data: res.data.filter((i) => i.room?.id === roomId),
     }));
   }, [houseId]);
   const slotOptions = useMemo(() => slots ?? [], [slots]);

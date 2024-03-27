@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { DependencyList, useEffect, useState } from 'react';
 
 export type CancelFn = () => void;
 
@@ -8,9 +8,9 @@ export type ApiFetchHook<TData> = [
   error: Error | undefined,
 ];
 
-export const useApiFetch = <TData, TParams extends Array<unknown> = []>(
-  apiMethod: (...params: TParams) => Promise<import('axios').AxiosResponse<TData, any>>,
-  params: TParams,
+export const useApiFetch = <TData>(
+  apiMethod: () => Promise<import('axios').AxiosResponse<TData, any>>,
+  params: DependencyList,
 ): ApiFetchHook<TData> => {
   const [fetchedData, setData] = useState<TData | undefined>();
   const [pending, setPending] = useState<boolean>(false);
@@ -18,7 +18,7 @@ export const useApiFetch = <TData, TParams extends Array<unknown> = []>(
   useEffect(() => {
     let cancelled = false;
     setPending(true);
-    apiMethod(...params)
+    apiMethod()
       .then(({ data }) => {
         if (!cancelled) {
           setData(data);

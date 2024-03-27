@@ -6,9 +6,10 @@ import React from 'react';
 
 export interface HousesTableProps {
   data: House[]
+  onRowClick?: (houseId: number) => void
 }
 
-function HousesTable({ data }: HousesTableProps) {
+function HousesTable({ data, onRowClick }: HousesTableProps) {
   return (
     <TableContainer>
       <Table>
@@ -21,7 +22,7 @@ function HousesTable({ data }: HousesTableProps) {
         <TableBody>
           {
                     data.map((house) => (
-                      <TableRow key={house.id ?? 0} hover>
+                      <TableRow key={house.id ?? 0} hover onClick={() => { onRowClick!(house.id!); }}>
                         <TableCell>{house.id}</TableCell>
                         <TableCell>{house.name}</TableCell>
                       </TableRow>
@@ -33,5 +34,9 @@ function HousesTable({ data }: HousesTableProps) {
     </TableContainer>
   );
 }
+
+HousesTable.defaultProps = {
+  onRowClick: () => {},
+};
 
 export default HousesTable;
