@@ -1,7 +1,9 @@
-import { Box, Button, Container, Grid, IconButton, Paper, TextField, Toolbar, Tooltip, Typography } from '@mui/material';
+import {
+  Container, Grid, Paper, Typography,
+} from '@mui/material';
+import { useCallback, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useApi } from '../../providers/ApiClient';
-import { useCallback, useEffect, useState } from 'react';
-import { Link, Outlet, useNavigate } from 'react-router-dom';
 import { ResidentBasicForm, useEmptyData } from '../../components/resident/ResidentBasicForm';
 
 function NewResident() {
@@ -19,22 +21,23 @@ function NewResident() {
       firstName: formData.firstName,
       birthday: formData.birthDate.toISOString(),
     })
-      .then(({data}) => {
-        if(!cancelled) {
+      .then(() => {
+        if (!cancelled) {
           navigate('/residents');
         }
       })
       .finally(() => {
-        if(!cancelled) { setCreatePending(false); }
-      })
+        if (!cancelled) { setCreatePending(false); }
+      });
 
-    return () => { cancelled = true };
-  }, [ formData, residentsApi, navigate ]);
+    return () => { cancelled = true; };
+  }, [formData, residentsApi, navigate]);
 
-  return <Container>
+  return (
+    <Container>
       <Grid container>
         <Grid item xs={12}>
-          <Typography variant='h3'>
+          <Typography variant="h3">
             New resident
           </Typography>
         </Grid>
@@ -49,7 +52,8 @@ function NewResident() {
           </Paper>
         </Grid>
       </Grid>
-  </Container>
+    </Container>
+  );
 }
 
 export default NewResident;

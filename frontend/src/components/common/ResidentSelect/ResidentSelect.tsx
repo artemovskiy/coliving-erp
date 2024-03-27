@@ -1,4 +1,6 @@
-import { Box, CircularProgress, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from '@mui/material';
+import {
+  Box, CircularProgress, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography,
+} from '@mui/material';
 import { Resident } from 'coliving-erp-api-client';
 
 export interface ResidentSelectProps {
@@ -10,22 +12,23 @@ export interface ResidentSelectProps {
 function ResidentSelect(props: ResidentSelectProps) {
   const { residents, residentsPending, onChange } = props;
 
-  const handleRowClick = onChange ? onChange : () => {};
+  const handleRowClick = onChange || (() => {});
 
-  return <Box>
+  return (
     <Box>
-      <TextField
-        variant='standard'
-        fullWidth
-        label='Name'
-      />
-    </Box>
-    <Box>
-      { residentsPending && <CircularProgress/>}
-      {
+      <Box>
+        <TextField
+          variant="standard"
+          fullWidth
+          label="Name"
+        />
+      </Box>
+      <Box>
+        { residentsPending && <CircularProgress />}
+        {
         residents
-          ? 
-            <TableContainer sx={{maxHeight: 240}}>
+          ? (
+            <TableContainer sx={{ maxHeight: 240 }}>
               <Table stickyHeader>
                 <TableHead>
                   <TableRow>
@@ -35,22 +38,29 @@ function ResidentSelect(props: ResidentSelectProps) {
                 </TableHead>
                 <TableBody>
                   {
-                    residents.map(resident => {
-                      return <TableRow onClick={() => handleRowClick(resident)} hover key={resident.id!} data-id={resident.id!}>
+                    residents.map((resident) => (
+                      <TableRow
+                        onClick={() => handleRowClick(resident)}
+                        hover
+                        key={resident.id!}
+                        data-id={resident.id!}
+                      >
                         <TableCell>{resident.id}</TableCell>
                         <TableCell>{resident.firstName}</TableCell>
                       </TableRow>
-                    })
+                    ))
                   }
-                  
+
                 </TableBody>
               </Table>
             </TableContainer>
-          : <Typography variant='body1'>No options</Typography>
+          )
+          : <Typography variant="body1">No options</Typography>
       }
-     
+
+      </Box>
     </Box>
-  </Box>
+  );
 }
 
 export default ResidentSelect;

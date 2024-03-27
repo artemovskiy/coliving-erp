@@ -3,11 +3,11 @@ export interface ResidentBasicFormData {
   birthDate: Date;
 }
 
-export const useEmptyData = (): ResidentBasicFormData  => {
+export const useEmptyData = (): ResidentBasicFormData => {
   const birthday = new Date();
   birthday.setFullYear(birthday.getFullYear() - 25);
   return {
     firstName: '',
     birthDate: birthday,
-  }
-}
+  };
+};

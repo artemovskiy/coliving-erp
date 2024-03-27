@@ -1,8 +1,10 @@
-import { Container, Grid, Paper, Typography } from '@mui/material';
-import { useApi } from '../../providers/ApiClient';
+import {
+  Container, Grid, Paper, Typography,
+} from '@mui/material';
 import { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import BasicHouseForm, { emptyFormData } from '../../components/houses/BasicHouseForm';
+import { useApi } from '../../providers/ApiClient';
+import { BasicHouseForm, emptyFormData } from '../../components/houses/BasicHouseForm';
 
 function NewHousePage() {
   const { housesApi } = useApi();
@@ -16,24 +18,25 @@ function NewHousePage() {
     let cancelled = false;
     setCreatePending(true);
     housesApi.createHouse({
-      name: formData.name
+      name: formData.name,
     })
-      .then(({data}) => {
-        if(!cancelled) {
+      .then(() => {
+        if (!cancelled) {
           navigate('/houses');
         }
       })
       .finally(() => {
-        if(!cancelled) { setCreatePending(false); }
-      })
+        if (!cancelled) { setCreatePending(false); }
+      });
 
-    return () => { cancelled = true };
-  }, [ formData, housesApi, navigate ]);
+    return () => { cancelled = true; };
+  }, [formData, housesApi, navigate]);
 
-  return <Container>
+  return (
+    <Container>
       <Grid container>
         <Grid item xs={12}>
-          <Typography variant='h3'>
+          <Typography variant="h3">
             New house
           </Typography>
         </Grid>
@@ -44,11 +47,12 @@ function NewHousePage() {
               onChange={setFormData}
               createPending={createPending}
               onCreate={createHouse}
-             />
+            />
           </Paper>
         </Grid>
       </Grid>
-  </Container>
+    </Container>
+  );
 }
 
 export default NewHousePage;

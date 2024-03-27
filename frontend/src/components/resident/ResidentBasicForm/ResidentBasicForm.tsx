@@ -1,7 +1,7 @@
-import { Button, Grid, TextField } from '@mui/material';
+import { Grid, TextField } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers';
-import { ResidentBasicFormData } from './types';
 import { useCallback } from 'react';
+import { ResidentBasicFormData } from './types';
 import { ProgressButton } from '../../common/ProgressButton';
 
 export interface ResidentBasicFormProps {
@@ -12,44 +12,49 @@ export interface ResidentBasicFormProps {
 }
 
 function ResidentBasicForm(props: ResidentBasicFormProps) {
-  const { data, onChange, onCreate, createPending } = props;
+  const {
+    data, onChange, onCreate, createPending,
+  } = props;
 
   const handleCreate = useCallback(() => {
-    if(onCreate) onCreate();
-  }, [ onCreate ]);
+    if (onCreate) onCreate();
+  }, [onCreate]);
 
+  // eslint-disable-next-line max-len
   const handleFirstNameChange: React.ChangeEventHandler<HTMLTextAreaElement | HTMLInputElement> = useCallback((event) => {
-    if(!onChange) { return; }
+    if (!onChange) { return; }
     const changedData = {
       ...data,
       firstName: event.target.value,
-    }
+    };
     onChange(changedData);
   }, [onChange, data]);
 
-  return <Grid container rowSpacing={2}>
-    <Grid item lg={12}>
-      <TextField
-        required
-        id="outlined-required"
-        label="First name"
-        fullWidth
-        value={data.firstName}
-        onChange={handleFirstNameChange}
-      />
+  return (
+    <Grid container rowSpacing={2}>
+      <Grid item lg={12}>
+        <TextField
+          required
+          id="outlined-required"
+          label="First name"
+          fullWidth
+          value={data.firstName}
+          onChange={handleFirstNameChange}
+        />
+      </Grid>
+      <Grid item lg={12}>
+        <DatePicker
+          label="Birthday"
+          value={data.birthDate}
+        />
+      </Grid>
+      <Grid item lg={12}>
+        <ProgressButton color="primary" onClick={handleCreate} pending={createPending}>
+          Create
+        </ProgressButton>
+      </Grid>
     </Grid>
-    <Grid item lg={12}>
-      <DatePicker
-        label="Birthday"
-        value={data.birthDate}
-      />
-    </Grid>
-    <Grid item lg={12}>
-      <ProgressButton color='primary' onClick={handleCreate} pending={createPending}>
-        Create
-      </ProgressButton>
-    </Grid>
-  </Grid>;
+  );
 }
 
 export default ResidentBasicForm;

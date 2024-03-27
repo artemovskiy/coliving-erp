@@ -1,2 +1,1 @@
-export { default } from './HousesPage';
-export * from './HousesPage';
+export { default as HousesPage } from './HousesPage';

@@ -1,10 +1,12 @@
-import { Box, IconButton, Paper, Toolbar, Tooltip, Typography } from '@mui/material';
-import { useApi } from '../../providers/ApiClient';
-import { useEffect, useState } from 'react';
+import {
+  Box, IconButton, Paper, Toolbar, Tooltip, Typography,
+} from '@mui/material';
+import React, { useEffect, useState } from 'react';
 import { Resident } from 'coliving-erp-api-client';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import AddIcon from '@mui/icons-material/Add';
 import { Link, Outlet } from 'react-router-dom';
+import { useApi } from '../../providers/ApiClient';
 
 const columns: GridColDef<Resident>[] = [
   { field: 'id', headerName: 'ID', width: 90 },
@@ -18,30 +20,32 @@ const columns: GridColDef<Resident>[] = [
     headerName: 'Birthday',
     width: 150,
   },
-  
+
 ];
 
 function ResidentsTableToolbar() {
-  return <Toolbar
-    sx={{
-      pl: { sm: 2 },
-      pr: { xs: 1, sm: 1 },
-    }}
-  >
-    <Typography
-      sx={{ flex: '1 1 100%' }}
-      variant="h6"
-      id="tableTitle"
-      component="div"
+  return (
+    <Toolbar
+      sx={{
+        pl: { sm: 2 },
+        pr: { xs: 1, sm: 1 },
+      }}
     >
-      Nutrition
-    </Typography>
-    <Tooltip title="Add resident">
-      <IconButton component={Link} to='new'>
-        <AddIcon />
-      </IconButton>
-    </Tooltip>
-</Toolbar>
+      <Typography
+        sx={{ flex: '1 1 100%' }}
+        variant="h6"
+        id="tableTitle"
+        component="div"
+      >
+        Nutrition
+      </Typography>
+      <Tooltip title="Add resident">
+        <IconButton component={Link} to="new">
+          <AddIcon />
+        </IconButton>
+      </Tooltip>
+    </Toolbar>
+  );
 }
 
 function Residents() {
@@ -51,21 +55,23 @@ function Residents() {
   useEffect(() => {
     let cancelled = false;
     residentsApi.listResidents()
-    .then(({data}) => {
-      if(!cancelled) {
-        setResidents(data);
-      }
-    })
+      .then(({ data }) => {
+        if (!cancelled) {
+          setResidents(data);
+        }
+      });
 
-    return () => { cancelled = true };
+    return () => { cancelled = true; };
   }, [residentsApi]);
 
-  return <Box>
-    <Typography variant='h3'>Residents</Typography>
-    <Paper>
-     {!!residents &&
+  return (
+    <Box>
+      <Typography variant="h3">Residents</Typography>
+      <Paper>
+        {!!residents
+      && (
       <>
-        <ResidentsTableToolbar/>
+        <ResidentsTableToolbar />
         <DataGrid
           rows={residents}
           columns={columns}
@@ -76,13 +82,14 @@ function Residents() {
               },
             },
           }}
-          pageSizeOptions={[5]}        
+          pageSizeOptions={[5]}
         />
       </>
-    }
-    </Paper>
-    <Outlet/>
-  </Box>
+      )}
+      </Paper>
+      <Outlet />
+    </Box>
+  );
 }
 
 export default Residents;

@@ -1,4 +1,6 @@
-import { Accommodation, AccommodationControllerApi, HousesApi, ResidentControllerApi, RoomsApi, SlotsApi } from 'coliving-erp-api-client';
+import {
+  AccommodationControllerApi, HousesApi, ResidentControllerApi, RoomsApi, SlotsApi,
+} from 'coliving-erp-api-client';
 import { createContext, useContext } from 'react';
 
 export interface ApiClientContextData {
@@ -16,6 +18,6 @@ export const defaultcontext = {
   housesApi: new HousesApi(undefined, '/api'),
   roomsApi: new RoomsApi(undefined, '/api'),
 };
-export const apiClientContext = createContext<ApiClientContextData>(defaultcontext)
+export const apiClientContext = createContext<ApiClientContextData>(defaultcontext);
 
 export const useApi = () => useContext(apiClientContext);

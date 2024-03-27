@@ -1,6 +1,9 @@
-import { AppBar, Box, Button, Drawer, IconButton, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Toolbar, Typography, styled } from '@mui/material';
+import {
+  AppBar, Box, Button, Drawer, IconButton, List, ListItem, ListItemButton,
+  ListItemIcon, ListItemText, Toolbar, Typography, styled,
+} from '@mui/material';
 import React, { ReactNode, useState } from 'react';
-import { Menu as  MenuIcon, Inbox as InboxIcon, Mail as MailIcon} from '@mui/icons-material';
+import { Menu as MenuIcon } from '@mui/icons-material';
 import CalendarViewMonthIcon from '@mui/icons-material/CalendarViewMonth';
 import ApartmentIcon from '@mui/icons-material/Apartment';
 import PersonIcon from '@mui/icons-material/Person';
@@ -8,7 +11,7 @@ import HouseIcon from '@mui/icons-material/House';
 import { Link } from 'react-router-dom';
 
 export interface AppLayoutProps {
-  children?: ReactNode; 
+  children?: ReactNode;
 }
 
 const drawerWidth = 240;
@@ -16,13 +19,13 @@ const drawerWidth = 240;
 const Offset = styled('div')(({ theme }) => theme.mixins.toolbar);
 
 function AppLayout({ children }: AppLayoutProps) {
-
   const [open, setOpen] = useState(true);
 
-  return <Box sx={{ display: 'flex' }}>
-    <AppBar position='fixed'  sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
-    <Toolbar>
-      <IconButton
+  return (
+    <Box sx={{ display: 'flex' }}>
+      <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+        <Toolbar>
+          <IconButton
             color="inherit"
             aria-label="open drawer"
             onClick={() => setOpen(true)}
@@ -33,26 +36,28 @@ function AppLayout({ children }: AppLayoutProps) {
             }}
           >
             <MenuIcon />
-      </IconButton>
+          </IconButton>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             News
           </Typography>
           <Button color="inherit">Login</Button>
         </Toolbar>
-    </AppBar>
-    <Drawer
-      variant="permanent"
-      open={open}
-      sx={{
-        width: drawerWidth,
-        flexShrink: 0,
-        [`& .MuiDrawer-paper`]: { width: drawerWidth, boxSizing: 'border-box' },
-      }}
-    >
-      <Toolbar />
+      </AppBar>
+      <Drawer
+        variant="permanent"
+        open={open}
+        sx={{
+          width: drawerWidth,
+          flexShrink: 0,
+          '& .MuiDrawer-paper': { width: drawerWidth, boxSizing: 'border-box' },
+        }}
+      >
+        <Toolbar />
         <List>
-          <ListItem  disablePadding sx={{ display: 'block' }}>
-            <ListItemButton  component={Link} to='/'
+          <ListItem disablePadding sx={{ display: 'block' }}>
+            <ListItemButton
+              component={Link}
+              to="/"
               sx={{
                 minHeight: 48,
                 justifyContent: open ? 'initial' : 'center',
@@ -66,15 +71,17 @@ function AppLayout({ children }: AppLayoutProps) {
                   justifyContent: 'center',
                 }}
               >
-                <ApartmentIcon/>
+                <ApartmentIcon />
               </ListItemIcon>
               <ListItemText>
                 Overview
               </ListItemText>
             </ListItemButton>
           </ListItem>
-          <ListItem  disablePadding sx={{ display: 'block' }}>
-            <ListItemButton component={Link} to='/accommodations' 
+          <ListItem disablePadding sx={{ display: 'block' }}>
+            <ListItemButton
+              component={Link}
+              to="/accommodations"
               sx={{
                 minHeight: 48,
                 justifyContent: open ? 'initial' : 'center',
@@ -88,15 +95,17 @@ function AppLayout({ children }: AppLayoutProps) {
                   justifyContent: 'center',
                 }}
               >
-                <CalendarViewMonthIcon/>
+                <CalendarViewMonthIcon />
               </ListItemIcon>
               <ListItemText>
-                Accommodations  
+                Accommodations
               </ListItemText>
             </ListItemButton>
           </ListItem>
-          <ListItem  disablePadding sx={{ display: 'block' }}>
-            <ListItemButton component={Link} to='/residents' 
+          <ListItem disablePadding sx={{ display: 'block' }}>
+            <ListItemButton
+              component={Link}
+              to="/residents"
               sx={{
                 minHeight: 48,
                 justifyContent: open ? 'initial' : 'center',
@@ -110,15 +119,17 @@ function AppLayout({ children }: AppLayoutProps) {
                   justifyContent: 'center',
                 }}
               >
-                <PersonIcon/>
+                <PersonIcon />
               </ListItemIcon>
               <ListItemText>
-                Residents  
+                Residents
               </ListItemText>
             </ListItemButton>
           </ListItem>
-          <ListItem  disablePadding sx={{ display: 'block' }}>
-            <ListItemButton component={Link} to='/houses' 
+          <ListItem disablePadding sx={{ display: 'block' }}>
+            <ListItemButton
+              component={Link}
+              to="/houses"
               sx={{
                 minHeight: 48,
                 justifyContent: open ? 'initial' : 'center',
@@ -132,21 +143,27 @@ function AppLayout({ children }: AppLayoutProps) {
                   justifyContent: 'center',
                 }}
               >
-                <HouseIcon/>
+                <HouseIcon />
               </ListItemIcon>
               <ListItemText>
-                Houses  
+                Houses
               </ListItemText>
             </ListItemButton>
           </ListItem>
         </List>
       </Drawer>
-      
-    <Box component="main" sx={{ flexGrow: 1, p: 3, display: 'flex', flexDirection: 'column' }}>
-      <Offset/>
-      { children }
+
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1, p: 3, display: 'flex', flexDirection: 'column',
+        }}
+      >
+        <Offset />
+        { children }
+      </Box>
     </Box>
-  </Box>
+  );
 }
 
 export default AppLayout;

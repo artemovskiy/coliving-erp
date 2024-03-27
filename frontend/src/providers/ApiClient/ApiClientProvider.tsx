@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import React, { ReactNode } from 'react';
 import { apiClientContext, defaultcontext } from './context';
 
 export interface ApiContextProviderProps {
@@ -6,9 +6,11 @@ export interface ApiContextProviderProps {
 }
 
 function ApiContextProvider({ children }: ApiContextProviderProps) {
-  return <apiClientContext.Provider value={defaultcontext}>
-    { children }
-  </apiClientContext.Provider>
+  return (
+    <apiClientContext.Provider value={defaultcontext}>
+      { children }
+    </apiClientContext.Provider>
+  );
 }
 
 export default ApiContextProvider;
