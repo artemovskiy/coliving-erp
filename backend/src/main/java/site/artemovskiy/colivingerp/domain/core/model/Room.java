@@ -2,6 +2,8 @@ package site.artemovskiy.colivingerp.domain.core.model;
 
 import jakarta.persistence.*;
 
+import java.util.Set;
+
 @Entity
 @Table(name = "rooms")
 public class Room {
@@ -14,9 +16,19 @@ public class Room {
     @ManyToOne
     @JoinColumn(name = "house_id", nullable = false)
     private House house;
+    @OneToMany(mappedBy = "room", fetch = FetchType.LAZY)
+    private Set<Slot> slots;
 
     public Room() {
 
+    }
+
+    public Set<Slot> getSlots() {
+        return slots;
+    }
+
+    public void setSlots(Set<Slot> slots) {
+        this.slots = slots;
     }
 
     public int getId() {

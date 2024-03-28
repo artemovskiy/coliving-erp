@@ -2,9 +2,13 @@ package site.artemovskiy.colivingerp.domain.core.model;
 
 import jakarta.persistence.*;
 
+import java.util.Set;
+
 @Entity
 @Table(name = "houses")
 public class House {
+    @OneToMany(mappedBy = "house", fetch = FetchType.LAZY)
+    public Set<Room> rooms;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -26,5 +30,12 @@ public class House {
         this.name = name;
     }
 
+    public Set<Room> getRooms() {
+        return rooms;
+    }
+
+    public void setRooms(Set<Room> rooms) {
+        this.rooms = rooms;
+    }
 
 }

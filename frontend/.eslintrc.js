@@ -37,7 +37,8 @@ module.exports = {
         "react/react-in-jsx-scope": "off",
         "react/require-default-props": "off", // TODO: enable and add default props
 
-        "max-len": ["error", 120]
+        "max-len": ["error", 120],
+        "arrow-body-style": "off"
     },
     ignorePatterns: ['.eslintrc.js', '**/*.css']
 }

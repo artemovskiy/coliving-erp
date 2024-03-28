@@ -1,5 +1,5 @@
 import {
-  AccommodationControllerApi, HousesApi, ResidentControllerApi, RoomsApi, SlotsApi,
+  AccommodationControllerApi, HousesApi, ResidentControllerApi, RoomsApi, SlotsApi, ChessPlateControllerApi,
 } from 'coliving-erp-api-client';
 import { createContext, useContext } from 'react';
 
@@ -9,6 +9,7 @@ export interface ApiClientContextData {
   housesApi: HousesApi,
   roomsApi: RoomsApi,
   residentsApi: ResidentControllerApi;
+  chessPlateControllerApi: ChessPlateControllerApi;
 }
 
 export const defaultcontext = {
@@ -17,6 +18,8 @@ export const defaultcontext = {
   residentsApi: new ResidentControllerApi(undefined, '/api'),
   housesApi: new HousesApi(undefined, '/api'),
   roomsApi: new RoomsApi(undefined, '/api'),
+  chessPlateControllerApi: new ChessPlateControllerApi(undefined, '/api'),
+
 };
 export const apiClientContext = createContext<ApiClientContextData>(defaultcontext);
 

@@ -181,12 +181,12 @@ function RoomsSection({ houseId } : RoomsSectionProps) {
 
   const [rooms, roomsPending] = useApiFetch<Room[]>(() => roomsApi.listRooms().then((res) => ({
     ...res,
-    data: res.data.filter((i) => i.house?.id),
+    data: res.data.filter((i) => i.house?.id === houseId),
   })), [houseId, roomsApi]);
 
   const [slots, slotsPending] = useApiFetch<Slot[]>(() => slotsApi.listSlots().then((res) => ({
     ...res,
-    data: res.data.filter((i) => i.room?.house?.id),
+    data: res.data.filter((i) => i.room?.house?.id === houseId),
   })), [houseId, roomsApi]);
 
   const roomsWithSlots: RoomWithSlots[] | undefined = useMemo(() => {

@@ -20,6 +20,7 @@ interface AccommodationCell {
 const prepareAccommodationCells = (start: Date, end: Date, accommodations: AccommodationData[]): AccommodationCell[] => {
   const cells: AccommodationCell[] = [];
   let lastAccommodationEnd: Date | undefined;
+  let emptyCounter = 0;
   // eslint-disable-next-line no-restricted-syntax
   for (const accommodation of accommodations) {
     if (accommodation.startDate > end) {
@@ -32,15 +33,16 @@ const prepareAccommodationCells = (start: Date, end: Date, accommodations: Accom
         cells.push({
           length,
           isEmpty: true,
-          label: 'empty',
+          label: `empty${emptyCounter}`,
         });
       } else {
         cells.push({
           length: differenceInCalendarDays(accommodation.startDate, start),
           isEmpty: true,
-          label: 'empty',
+          label: `empty${emptyCounter}`,
         });
       }
+      emptyCounter += 1;
     }
 
     cells.push({
@@ -88,7 +90,6 @@ function AccommodationsTableToolbar() {
 }
 
 function AccommodationsMonthTable({ data, interval }: { data: AccommodationsSheet, interval: Interval }) {
-  console.log(data.months);
   return (
     <Paper>
       <AccommodationsTableToolbar />
@@ -141,7 +142,7 @@ function AccommodationsMonthTable({ data, interval }: { data: AccommodationsShee
                           {
                           accommodationCells.map((i) => {
                             if (i.isEmpty) {
-                              return <TableCell key={i.label} colSpan={i.length} aria-labelledby="empty" />;
+                              return <TableCell key={i.label} colSpan={i.length} />;
                             }
                             return (
                               <TableCell key={i.label} colSpan={i.length}>

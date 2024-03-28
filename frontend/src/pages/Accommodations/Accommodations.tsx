@@ -1,76 +1,121 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { Box } from '@mui/material';
+// @ts-nocheck
+import React, {
+  useCallback, useEffect, useMemo, useState,
+} from 'react';
+
 import {
-  differenceInDays, eachDayOfInterval, eachMonthOfInterval, endOfMonth,
+  Box, FormControl, IconButton, MenuItem, Select,
+} from '@mui/material';
+import {
+  addMonths,
+  differenceInDays, endOfMonth, format,
 } from 'date-fns';
-import { Accommodation } from 'coliving-erp-api-client';
-import { ASMonth, RoomWithSlots } from './types';
+import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
+import NavigateNextIcon from '@mui/icons-material/NavigateNext';
+import { RoomWithSlots } from './types';
 import AccommodationsMonthTable from './AccommmodationsMonthTable';
 import { useApi } from '../../providers/ApiClient';
 import { useApiFetch } from '../../api/useApiFetch';
 
+interface Interval {
+  start: Date;
+  end: Date;
+}
+
+const stepForward = (interval: Interval): Interval => {
+  return {
+    start: addMonths(interval.start, 1),
+    end: addMonths(interval.end, 1),
+  };
+};
+
+const stepBackward = (interval: Interval): Interval => {
+  return {
+    start: addMonths(interval.start, -1),
+    end: addMonths(interval.end, -1),
+  };
+};
+
+interface DisplayIntervalPickerProps {
+  value: Interval;
+  onChange: (value: Interval) => void;
+}
+
+function DisplayIntervalPicker({ value, onChange }: DisplayIntervalPickerProps) {
+  const handleNextClick = useCallback(() => {
+    onChange(stepForward(value));
+  }, [value, onChange]);
+
+  const handleBeforeClick = useCallback(() => {
+    onChange(stepBackward(value));
+  }, [value, onChange]);
+
+  return (
+    <Box>
+      <IconButton onClick={handleBeforeClick}>
+        <NavigateBeforeIcon />
+      </IconButton>
+      <IconButton onClick={handleNextClick}>
+        <NavigateNextIcon />
+      </IconButton>
+    </Box>
+  );
+}
+
 function Accommodations() {
   const start = new Date(2024, 1, 1);
-  const [startDate] = useState(start);
   const end = new Date(start);
   end.setMonth(end.getMonth() + 2);
   end.setDate((end.getDate() - 1));
-  const [endDate] = useState(end);
 
-  const { accommodationsApi, slotsApi, roomsApi } = useApi();
+  const [interval, setInterval] = useState<Interval>({ start, end });
 
-  const [accommodations, setAccommodations] = useState<Accommodation[] | undefined>();
-  useEffect(() => {
-    let cancelled = false;
-    accommodationsApi.listAccommodations()
-      .then(({ data }) => {
-        if (!cancelled) {
-          setAccommodations(data);
-        }
-      });
+  const { housesApi, chessPlateControllerApi } = useApi();
+  const [houses] = useApiFetch(() => housesApi.listHouses(), []);
+  const [currentHouseId, setCurrentHouseId] = useState<number | undefined>();
+  useEffect(() => { if (houses && houses.length > 0) setCurrentHouseId(houses[0].id); }, [houses]);
+  const curHidSafe = useMemo(() => {
+    if (!houses || houses.length === 0) { return undefined; }
+    return currentHouseId ?? houses[0].id;
+  }, [houses]);
 
-    return () => { cancelled = true; };
-  }, [accommodationsApi]);
-
-  const [rooms] = useApiFetch(() => roomsApi.listRooms(), [roomsApi]);
-  const [slots] = useApiFetch(() => slotsApi.listSlots(), [slotsApi]);
+  const [chessPlateDate] = useApiFetch(() => chessPlateControllerApi.get1(
+    format(interval.start, 'yyyy-MM-dd'),
+    format(interval.end, 'yyyy-MM-dd'),
+    currentHouseId,
+  ), [interval, currentHouseId]);
 
   const accommodationsSheet = useMemo(() => {
-    if (rooms === undefined || slots === undefined || accommodations === undefined) {
+    if (!chessPlateDate) {
       return undefined;
     }
 
-    const interval = {
-      start: startDate,
-      end: endDate,
-    };
-    const monthStarts = eachMonthOfInterval(interval);
-    const months: ASMonth[] = monthStarts.map((i) => {
-      const month = i.toLocaleString('default', { month: 'long' });
-      const endOf = endOfMonth(i);
-      const length = differenceInDays(endOf, i) + 1;
-      return {
-        name: month,
-        isoFirstDay: i.toISOString(),
-        length,
-      };
-    });
-
-    const dates = eachDayOfInterval(interval);
-
-    const data: RoomWithSlots[] = rooms.map((room) => {
-      const roomSlots = slots.filter((i) => i.room?.id === room.id).map((slot) => {
-        const slotAccommodations = accommodations.filter((i) => i.slot?.id === slot.id);
-        return ({
-          id: slot.id!,
-          name: slot.label!,
-          accommodations: slotAccommodations.map((j) => ({
-            label: `${j.id} ${j.resident?.firstName}`,
-            startDate: new Date(j.start ?? ''),
-            endDate: new Date(j.endDate ?? ''),
-          })),
-        });
+    const months = chessPlateDate.headers?.map((h) => h.months?.map((m) => m.firstDay)).flat()
+      .map((i) => new Date(i))
+      .map((i) => {
+        const month = i.toLocaleString('default', { month: 'long' });
+        const endOf = endOfMonth(i);
+        const length = differenceInDays(endOf, i) + 1;
+        return {
+          name: month,
+          isoFirstDay: i.toISOString(),
+          length,
+        };
       });
+    const dates = chessPlateDate.headers?.map((h) => h.months?.map((m) => m.days).flat()).flat()
+      .map((i) => new Date(i));
+    const house = chessPlateDate.houses![0];
+    // @ts-ignore
+    const data: RoomWithSlots[] = house.rooms.map((room) => {
+      const roomSlots = room.slots.map((slot) => ({
+        id: slot.id!,
+        name: slot.label!,
+        accommodations: slot.accommodations.map((j) => ({
+          label: `${j.id} ${j.resident?.firstName}`,
+          startDate: new Date(j.start ?? ''),
+          endDate: new Date(j.endDate ?? ''),
+        })),
+      }));
       return {
         id: room.id!,
         name: room.name!,
@@ -82,20 +127,25 @@ function Accommodations() {
       months,
       dates,
       rooms: data,
-      // slots: slotsWithAccommodations.map(({ name, accommodations }) => ({
-      //   name,
-      //   accommodations: accommodations,
-      // })),
     };
-  }, [startDate, endDate, slots, accommodations]);
+  }, [interval, chessPlateDate]);
 
   return (
 
     <Box>
+      { houses
+      && (
+        <FormControl>
+          <Select value={curHidSafe} onChange={(e) => setCurrentHouseId(e.target.value)}>
+            { houses.map((house) => <MenuItem key={house.id} value={house.id}>{`${house.id} ${house.name}`}</MenuItem>)}
+          </Select>
+        </FormControl>
+      )}
+      <DisplayIntervalPicker value={interval} onChange={setInterval} />
       { !!accommodationsSheet && (
       <AccommodationsMonthTable
         data={accommodationsSheet}
-        interval={{ start: startDate, end: endDate }}
+        interval={interval}
       />
       )}
     </Box>

@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import site.artemovskiy.colivingerp.domain.core.api.dto.CreateHouse;
+import site.artemovskiy.colivingerp.domain.core.api.dto.HouseDto;
+import site.artemovskiy.colivingerp.domain.core.api.mappers.HouseMapper;
 import site.artemovskiy.colivingerp.domain.core.model.House;
 import site.artemovskiy.colivingerp.domain.core.repository.HouseRepository;
 
@@ -16,11 +18,13 @@ public class Houses {
     @Autowired
     private HouseRepository houseRepository;
 
-    @GetMapping
-    public ResponseEntity<Collection<House>> listHouses() {
-        Collection<House> houses = houseRepository.findAll();
+    @Autowired
+    private HouseMapper houseMapper;
 
-        return ResponseEntity.ok(houses);
+    @GetMapping
+    public ResponseEntity<Collection<HouseDto>> listHouses() {
+        Collection<House> houses = houseRepository.findAll();
+        return ResponseEntity.ok(houseMapper.modelCollectionToDTOs(houses));
     }
 
     @PostMapping
