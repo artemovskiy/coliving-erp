@@ -1,10 +1,10 @@
 package site.artemovskiy.colivingerp.domain.residents.api.dto;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 public class CreateResident {
 
     public String firstName;
 
-    public Date birthday;
+    public LocalDate birthday;
 }

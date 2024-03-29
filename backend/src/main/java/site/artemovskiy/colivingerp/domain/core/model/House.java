@@ -18,6 +18,10 @@ public class House {
     public House() {
     }
 
+    public House(int id) {
+        this.id = id;
+    }
+
     public int getId() {
         return id;
     }

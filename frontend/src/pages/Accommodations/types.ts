@@ -14,6 +14,7 @@ export interface AccommodationData {
   startDate: Date;
   endDate: Date;
   label: string;
+  id: number;
 }
 
 export interface SlotWithAccommodations {

@@ -1,5 +1,5 @@
 import {
-  Interval, differenceInCalendarDays, differenceInDays,
+  Interval, differenceInCalendarDays, differenceInDays, max, min,
 } from 'date-fns';
 import {
   Box, IconButton, Paper, Table, TableBody, TableCell, TableContainer,
@@ -14,6 +14,7 @@ interface AccommodationCell {
   length: number;
   isEmpty: boolean;
   label: string;
+  id?: string;
 }
 
 // eslint-disable-next-line max-len
@@ -46,9 +47,10 @@ const prepareAccommodationCells = (start: Date, end: Date, accommodations: Accom
     }
 
     cells.push({
-      length: differenceInCalendarDays(accommodation.endDate, accommodation.startDate),
+      length: differenceInCalendarDays(min([accommodation.endDate, end]), max([start, accommodation.startDate])) + 1,
       isEmpty: false,
       label: accommodation.label,
+      id: accommodation.id.toString(10),
     });
     lastAccommodationEnd = accommodation.endDate;
   }
@@ -145,9 +147,9 @@ function AccommodationsMonthTable({ data, interval }: { data: AccommodationsShee
                               return <TableCell key={i.label} colSpan={i.length} />;
                             }
                             return (
-                              <TableCell key={i.label} colSpan={i.length}>
+                              <TableCell key={i.label} colSpan={i.length} sx={{ padding: 0 }}>
                                 <Box sx={{ bgcolor: 'primary.main', width: '100%' }}>
-                                  <Link to={`preview/${i.label}`}>{i.label}</Link>
+                                  <Link to={`preview/${i.id}`}>{i.label}</Link>
                                 </Box>
                               </TableCell>
                             );
@@ -160,34 +162,6 @@ function AccommodationsMonthTable({ data, interval }: { data: AccommodationsShee
                 </React.Fragment>
               ))
             }
-            {/* {
-              data.slots.map((slot) => {
-                const accommodationCells = prepareAccommodationCells(
-                  interval.start as Date,
-                  interval.end as Date,
-                  slot.accommodations,
-                );
-                return (
-                  <TableRow key={slot.name}>
-                    <TableCell scope="row" sx={{ borderRight: 1 }}>{slot.name}</TableCell>
-                    {
-                    accommodationCells.map((i) => {
-                      if (i.isEmpty) {
-                        return <TableCell key={i.label} colSpan={i.length} aria-labelledby="empty" />;
-                      }
-                      return (
-                        <TableCell key={i.label} colSpan={i.length}>
-                          <Box sx={{ bgcolor: 'primary.main', width: '100%' }}>
-                            <Link to={`preview/${i.label}`}>{i.label}</Link>
-                          </Box>
-                        </TableCell>
-                      );
-                    })
-                  }
-                  </TableRow>
-                );
-              })
-            } */}
           </TableBody>
         </Table>
       </TableContainer>

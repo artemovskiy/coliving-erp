@@ -18,6 +18,9 @@ public class Room {
     private House house;
     @OneToMany(mappedBy = "room", fetch = FetchType.LAZY)
     private Set<Slot> slots;
+    public Room(int id) {
+        this.id = id;
+    }
 
     public Room() {
 

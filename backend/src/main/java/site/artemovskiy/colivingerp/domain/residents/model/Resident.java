@@ -2,7 +2,7 @@ package site.artemovskiy.colivingerp.domain.residents.model;
 
 import jakarta.persistence.*;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "residents")
@@ -12,7 +12,12 @@ public class Resident {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String firstName;
-    private Date birthday;
+    private LocalDate birthday;
+    public Resident(Long id) {
+        this.id = id;
+    }
+    public Resident() {
+    }
 
     public Long getId() {
         return id;
@@ -26,11 +31,11 @@ public class Resident {
         this.firstName = firstName;
     }
 
-    public Date getBirthday() {
+    public LocalDate getBirthday() {
         return birthday;
     }
 
-    public void setBirthday(Date birthday) {
+    public void setBirthday(LocalDate birthday) {
         this.birthday = birthday;
     }
 

@@ -1,4 +1,4 @@
-package site.artemovskiy.colivingerp.domain.residents.api.dto;
+package site.artemovskiy.colivingerp.domain.accommodations.domain.chessplate.dto;
 
 import site.artemovskiy.colivingerp.common.time.DateSpan;
 

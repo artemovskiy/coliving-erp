@@ -13,6 +13,7 @@ import { NewAccommodationPage } from './pages/NewAccommodation';
 import { HousesPage } from './pages/HousesPage';
 import { NewHousePage } from './pages/NewHouse';
 import { HousePage } from './pages/HousePage';
+import { AccommodationPreviewPage } from './pages/AccommodationPreview';
 
 const router = createBrowserRouter([
   {
@@ -30,6 +31,9 @@ const router = createBrowserRouter([
       {
         path: '/accommodations',
         Component: AccommodationsPage,
+        children: [
+          { path: 'preview/:id', Component: AccommodationPreviewPage },
+        ],
       },
       {
         path: '/accommodations/new',

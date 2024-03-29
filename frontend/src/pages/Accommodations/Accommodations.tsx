@@ -4,7 +4,7 @@ import React, {
 } from 'react';
 
 import {
-  Box, FormControl, IconButton, MenuItem, Select,
+  Box, FormControl, Grid, IconButton, MenuItem, Select,
 } from '@mui/material';
 import {
   addMonths,
@@ -12,6 +12,7 @@ import {
 } from 'date-fns';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
+import { Outlet } from 'react-router-dom';
 import { RoomWithSlots } from './types';
 import AccommodationsMonthTable from './AccommmodationsMonthTable';
 import { useApi } from '../../providers/ApiClient';
@@ -77,7 +78,7 @@ function Accommodations() {
   const curHidSafe = useMemo(() => {
     if (!houses || houses.length === 0) { return undefined; }
     return currentHouseId ?? houses[0].id;
-  }, [houses]);
+  }, [houses, currentHouseId]);
 
   const [chessPlateDate] = useApiFetch(() => chessPlateControllerApi.get1(
     format(interval.start, 'yyyy-MM-dd'),
@@ -114,6 +115,7 @@ function Accommodations() {
           label: `${j.id} ${j.resident?.firstName}`,
           startDate: new Date(j.start ?? ''),
           endDate: new Date(j.endDate ?? ''),
+          id: j.id,
         })),
       }));
       return {
@@ -131,9 +133,11 @@ function Accommodations() {
   }, [interval, chessPlateDate]);
 
   return (
-
-    <Box>
-      { houses
+    <>
+      <Box>
+        <Grid container alignItems="center">
+          <Grid item>
+            { houses
       && (
         <FormControl>
           <Select value={curHidSafe} onChange={(e) => setCurrentHouseId(e.target.value)}>
@@ -141,14 +145,22 @@ function Accommodations() {
           </Select>
         </FormControl>
       )}
-      <DisplayIntervalPicker value={interval} onChange={setInterval} />
-      { !!accommodationsSheet && (
-      <AccommodationsMonthTable
-        data={accommodationsSheet}
-        interval={interval}
-      />
-      )}
-    </Box>
+          </Grid>
+          <Grid item>
+            <DisplayIntervalPicker value={interval} onChange={setInterval} />
+          </Grid>
+        </Grid>
+
+        { !!accommodationsSheet && (
+        <AccommodationsMonthTable
+          data={accommodationsSheet}
+          interval={interval}
+        />
+        )}
+      </Box>
+      <Outlet />
+    </>
+
   );
 }
 
