@@ -9,6 +9,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import CloseIcon from '@mui/icons-material/Close';
 import { AccommodationDto } from 'coliving-erp-api-client';
 import { DatePicker } from '@mui/x-date-pickers';
+import { format } from 'date-fns';
 import { useApi } from '../../providers/ApiClient';
 import { useApiFetch } from '../../api/useApiFetch';
 import { ProgressButton } from '../../components/common/ProgressButton';
@@ -103,10 +104,13 @@ function AccommodationPreviewForm({
 }
 interface RemoveAccommodationDialogProps {
   open: boolean;
+  deletePending: boolean;
   onClose: () => void;
   onConfirm: () => void;
 }
-function RemoveAccommodationDialog({ open, onClose, onConfirm }: RemoveAccommodationDialogProps) {
+function RemoveAccommodationDialog({
+  open, onClose, onConfirm, deletePending,
+}: RemoveAccommodationDialogProps) {
   return (
     <Dialog open={open} onClose={onClose}>
       <DialogTitle>Remove accommodation</DialogTitle>
@@ -115,7 +119,7 @@ function RemoveAccommodationDialog({ open, onClose, onConfirm }: RemoveAccommoda
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Cancel</Button>
-        <Button onClick={onConfirm} color="error">confirm</Button>
+        <ProgressButton onClick={onConfirm} color="error" pending={deletePending}>confirm</ProgressButton>
       </DialogActions>
     </Dialog>
   );
@@ -123,36 +127,59 @@ function RemoveAccommodationDialog({ open, onClose, onConfirm }: RemoveAccommoda
 
 function AccommodationPreview() {
   const { id } = useParams();
-  const naigate = useNavigate();
+  const navigate = useNavigate();
   const onClose = () => {
-    naigate('/accommodations');
+    navigate('/accommodations');
   };
 
-  const { accommodationsApi } = useApi();
-  const [accommodation, accommodationPending] = useApiFetch(() => {
+  const intId = useMemo(() => {
     if (id === undefined) {
       throw new Error();
     }
-    const intId = parseInt(id, 10);
-    if (Number.isNaN(intId)) {
+    const t = parseInt(id, 10);
+    if (Number.isNaN(t)) {
       throw new Error();
     }
-    return accommodationsApi.get2(intId);
+    return t;
   }, [id]);
+
+  const { accommodationsApi } = useApi();
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [accommodation, accommodationPending, accommodationError, setAccommodation] = useApiFetch(() => {
+    return accommodationsApi.get2(intId);
+  }, [intId]);
 
   const [removeDialogOpen, setRemoveDialogOpen] = useState(false);
 
+  const [removePending, setRemovePending] = useState(false);
   const removeAccommodation = useCallback(() => {
-    setRemoveDialogOpen(false);
-    naigate('/accommodations');
-  }, []);
+    setRemovePending(true);
+    accommodationsApi.deleteAccommodation(intId)
+      .then(() => {
+        setRemoveDialogOpen(false);
+        // naigate('/accommodations');
+      })
+      .finally(() => {
+        setRemovePending(false);
+      });
+  }, [intId, accommodationsApi]);
 
   const [savePending, setSavePending] = useState(false);
 
-  const changeDateSpan = useCallback(() => {
+  const changeDateSpan = useCallback((value: DateSpan) => {
     setSavePending(true);
-    alert('not implemented');
-  }, []);
+    accommodationsApi.patchAccommodation(intId, {
+      startDate: format(value.start, 'yyyy-MM-dd'),
+      endDate: format(value.end, 'yyyy-MM-dd'),
+    })
+      .then((res) => {
+        setAccommodation(res.data);
+        navigate(0);
+      })
+      .finally(() => {
+        setSavePending(false);
+      });
+  }, [intId]);
 
   return (
     <Drawer anchor="right" open PaperProps={{ sx: { width: 1 / 3, padding: 2 } }} onClose={onClose}>
@@ -188,6 +215,7 @@ function AccommodationPreview() {
       <Box />
       <RemoveAccommodationDialog
         open={removeDialogOpen}
+        deletePending={removePending}
         onClose={() => setRemoveDialogOpen(false)}
         onConfirm={removeAccommodation}
       />

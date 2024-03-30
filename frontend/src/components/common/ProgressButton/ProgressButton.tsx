@@ -13,11 +13,12 @@ export interface ProgressButtonProps {
   'inherit' | 'primary' | 'secondary' | 'success' | 'error' | 'info' | 'warning',
   ButtonPropsColorOverrides
   >;
+  fullWidth?: boolean;
   variant?: OverridableStringUnion<'text' | 'outlined' | 'contained', ButtonPropsVariantOverrides>;
 }
 
 function ProgressButton({
-  onClick, variant, color, children, disabled, pending,
+  onClick, variant, color, children, disabled, pending, fullWidth,
 }: ProgressButtonProps) {
   return (
     <Box sx={{ m: 1, position: 'relative' }}>
@@ -25,7 +26,7 @@ function ProgressButton({
         onClick={onClick}
         variant={variant}
         color={color}
-        fullWidth
+        fullWidth={fullWidth}
         disabled={disabled}
       >
         { children }
@@ -46,5 +47,9 @@ function ProgressButton({
     </Box>
   );
 }
+
+ProgressButton.defaultProps = {
+  fullWidth: true,
+};
 
 export default ProgressButton;

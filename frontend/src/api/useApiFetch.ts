@@ -6,6 +6,7 @@ export type ApiFetchHook<TData> = [
   data: TData | undefined,
   pending: boolean,
   error: Error | undefined,
+  set: (value: TData) => void,
 ];
 
 export const useApiFetch = <TData>(
@@ -38,5 +39,5 @@ export const useApiFetch = <TData>(
     return () => { cancelled = true; };
   }, params);
 
-  return [fetchedData, pending, error];
+  return [fetchedData, pending, error, setData];
 };
