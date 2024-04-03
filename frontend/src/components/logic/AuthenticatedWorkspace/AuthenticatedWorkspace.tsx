@@ -2,6 +2,7 @@ import { Outlet } from 'react-router-dom';
 import { useAuth } from 'react-oidc-context';
 import { AppLayout } from '../../layout/AppLayout';
 import { NoLoginLayout } from '../../layout/NoLoginLayout';
+import { FullScreenPending } from '../../common/FullScreenPending';
 
 function AuthenticatedWorkspace() {
   const auth = useAuth();
@@ -12,6 +13,10 @@ function AuthenticatedWorkspace() {
       return <div>Signing you out...</div>;
     default:
       break;
+  }
+
+  if (auth.isLoading) {
+    return <FullScreenPending />;
   }
 
   if (auth.error) {
@@ -25,10 +30,6 @@ function AuthenticatedWorkspace() {
 
   if (!auth.isAuthenticated) {
     return <NoLoginLayout onLoginClick={auth.signinRedirect} loginPending={auth.isLoading} />;
-  }
-
-  if (auth.isLoading) {
-    return <div>Loading...</div>;
   }
 
   return (

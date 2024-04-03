@@ -27,7 +27,7 @@ function HousePage() {
     if (Number.isNaN(numId)) {
       throw new Error('can not parse id');
     }
-    return housesApi.get(numId);
+    return housesApi.get1(numId);
   }, [id]);
 
   const [formData, setFormData] = useState<BasicHouseFormData>();

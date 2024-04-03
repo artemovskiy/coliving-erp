@@ -146,7 +146,7 @@ function AccommodationPreview() {
   const { accommodationsApi } = useApi();
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [accommodation, accommodationPending, accommodationError, setAccommodation] = useApiFetch(() => {
-    return accommodationsApi.get2(intId);
+    return accommodationsApi.get3(intId);
   }, [intId]);
 
   const [removeDialogOpen, setRemoveDialogOpen] = useState(false);
