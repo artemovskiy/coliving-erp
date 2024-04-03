@@ -2,7 +2,7 @@ import {
   AppBar, Box, Button, Drawer, IconButton, List, ListItem, ListItemButton,
   ListItemIcon, ListItemText, Toolbar, Typography, styled,
 } from '@mui/material';
-import React, { ReactNode, useState } from 'react';
+import React, { ReactNode, useCallback, useState } from 'react';
 import { Menu as MenuIcon } from '@mui/icons-material';
 import CalendarViewMonthIcon from '@mui/icons-material/CalendarViewMonth';
 import ApartmentIcon from '@mui/icons-material/Apartment';
@@ -12,15 +12,18 @@ import { Link } from 'react-router-dom';
 
 export interface AppLayoutProps {
   children?: ReactNode;
+  onLogoutClick: () => void
 }
 
 const drawerWidth = 240;
 
 const Offset = styled('div')(({ theme }) => theme.mixins.toolbar);
 
-function AppLayout({ children }: AppLayoutProps) {
+function AppLayout({ children, onLogoutClick }: AppLayoutProps) {
   const [open, setOpen] = useState(true);
-
+  const logout = useCallback(() => {
+    onLogoutClick();
+  }, [onLogoutClick]);
   return (
     <Box sx={{ display: 'flex' }}>
       <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
@@ -40,7 +43,7 @@ function AppLayout({ children }: AppLayoutProps) {
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             News
           </Typography>
-          <Button color="inherit">Login</Button>
+          <Button color="inherit" onClick={logout}>logout</Button>
         </Toolbar>
       </AppBar>
       <Drawer

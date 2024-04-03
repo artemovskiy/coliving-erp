@@ -1,12 +1,8 @@
 import React from 'react';
 import './App.css';
 
-import {
-  createBrowserRouter,
-  Outlet,
-} from 'react-router-dom';
+import { createBrowserRouter } from 'react-router-dom';
 import { AccommodationsPage } from './pages/Accommodations';
-import { AppLayout } from './components/layout/AppLayout';
 import Residents from './pages/Residents/Residents';
 import { NewResident } from './pages/NewResident';
 import { NewAccommodationPage } from './pages/NewAccommodation';
@@ -14,19 +10,16 @@ import { HousesPage } from './pages/HousesPage';
 import { NewHousePage } from './pages/NewHouse';
 import { HousePage } from './pages/HousePage';
 import { AccommodationPreviewPage } from './pages/AccommodationPreview';
+import { AuthenticatedWorkspace } from './components/logic/AuthenticatedWorkspace';
 
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <AppLayout><Outlet /></AppLayout>,
+    Component: AuthenticatedWorkspace,
     children: [
       {
         path: '/',
         element: <div>Hello world!</div>,
-      },
-      {
-        path: '/aboba',
-        element: <div>Hello aboba!</div>,
       },
       {
         path: '/accommodations',
