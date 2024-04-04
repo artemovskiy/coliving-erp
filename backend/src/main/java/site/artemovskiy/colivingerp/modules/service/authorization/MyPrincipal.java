@@ -1,4 +1,4 @@
-package site.artemovskiy.colivingerp.sandbox;
+package site.artemovskiy.colivingerp.modules.service.authorization;
 
 import javax.security.auth.Subject;
 import java.security.Principal;

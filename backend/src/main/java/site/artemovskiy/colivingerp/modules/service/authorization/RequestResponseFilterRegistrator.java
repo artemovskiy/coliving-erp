@@ -1,4 +1,4 @@
-package site.artemovskiy.colivingerp.sandbox;
+package site.artemovskiy.colivingerp.modules.service.authorization;
 
 import com.nimbusds.jose.JOSEObjectType;
 import com.nimbusds.jose.JWSAlgorithm;
@@ -18,14 +18,11 @@ import com.nimbusds.oauth2.sdk.id.Issuer;
 import com.nimbusds.openid.connect.sdk.op.OIDCProviderMetadata;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 import site.artemovskiy.colivingerp.modules.service.configuration.config.OIDCConfig;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -68,14 +65,10 @@ public class RequestResponseFilterRegistrator {
                 )
         );
     }
+
     @Bean
-    public FilterRegistrationBean<RequestResponseLoggingFilter> registerRequestResponseLoggingFilter() {
-        FilterRegistrationBean<RequestResponseLoggingFilter> registrationBean = new FilterRegistrationBean<>();
-
-        registrationBean.setFilter(new RequestResponseLoggingFilter(jwtProcessor));
-        registrationBean.addUrlPatterns("/house/*");
-        registrationBean.setOrder(1);
-
-        return  registrationBean;
+    public JwtAuthenticationMiddleware requestResponseLoggingFilter() {
+        return new JwtAuthenticationMiddleware(jwtProcessor);
     }
+
 }

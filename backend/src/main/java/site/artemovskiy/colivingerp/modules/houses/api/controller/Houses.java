@@ -9,7 +9,6 @@ import site.artemovskiy.colivingerp.modules.houses.api.dto.HouseDto;
 import site.artemovskiy.colivingerp.modules.houses.api.mappers.HouseMapper;
 import site.artemovskiy.colivingerp.modules.houses.model.House;
 import site.artemovskiy.colivingerp.modules.houses.repository.HouseRepository;
-import site.artemovskiy.colivingerp.sandbox.AuthenticatedHttpRequest;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -28,10 +27,6 @@ public class Houses {
 
     @GetMapping
     public ResponseEntity<Collection<HouseDto>> listHouses() {
-        if(request.getUserPrincipal() == null) {
-            return ResponseEntity.badRequest().build();
-        }
-        System.out.printf("principal = %s%n", (request).getUserPrincipal().getName());
         Collection<House> houses = houseRepository.findAll();
         return ResponseEntity.ok(houseMapper.modelCollectionToDTOs(houses));
     }
