@@ -7,46 +7,41 @@ import {
 import {
   useCallback, useEffect, useMemo, useState,
 } from 'react';
-import { AxiosResponse } from 'axios';
 import { DatePicker } from '@mui/x-date-pickers';
 import { differenceInDays, differenceInMonths } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
 import { ProgressButton } from '../../components/common/ProgressButton';
-import { useApiFetch } from '../../api/useApiFetch';
-import { useApi } from '../../providers/ApiClient';
 import { ResidentSelect } from '../../components/common/ResidentSelect';
+import { useServerData } from '../../providers/ServerData';
+import { useDataFetch } from '../../api/useApiFetch';
 
 function NewAccommodation() {
   const {
-    residentsApi, housesApi, roomsApi, slotsApi, accommodationsApi,
-  } = useApi();
+    residents: residentsRepo, houses: housesRepo, rooms: roomsRepo,
+    slots: slotsRepo, accommodations: accommodationsRepo,
+  } = useServerData();
 
-  const [residents, residentsPending] = useApiFetch<Resident[]>(() => residentsApi.listResidents(), []);
+  const [residents, residentsPending] = useDataFetch<Resident[]>(() => residentsRepo.list(), []);
   const [residentId, setResidentId] = useState<Resident | undefined>();
-  const [houses, housesPending] = useApiFetch<House[]>(() => housesApi.listHouses(), []);
+
+  const [houses, housesPending] = useDataFetch<House[]>(() => housesRepo.list(), []);
   const [houseId, setHouseId] = useState<number | undefined>();
 
-  const [rooms, roomsPending] = useApiFetch<Room[] | undefined>(() => {
+  const [rooms, roomsPending] = useDataFetch<Room[] | undefined>(() => {
     if (houseId === undefined) {
-      return Promise.resolve({ data: [] } as unknown as AxiosResponse<Room[]>);
+      return Promise.resolve([]);
     }
-    return roomsApi.listRooms().then((res) => ({
-      ...res,
-      data: res.data.filter((i) => i.house?.id === houseId),
-    }));
+    return roomsRepo.list().then((res) => (res.filter((i) => i.house?.id === houseId)));
   }, [houseId]);
   const roomOptions = useMemo(() => rooms ?? [], [rooms]);
   const [roomId, setRoomId] = useState<number | undefined>();
   useEffect(() => setRoomId(undefined), [houseId]);
 
-  const [slots, slotsPending] = useApiFetch<Slot[] | undefined>(() => {
+  const [slots, slotsPending] = useDataFetch<Slot[] | undefined>(() => {
     if (roomId === undefined) {
-      return Promise.resolve({ data: [] } as unknown as AxiosResponse<Room[]>);
+      return Promise.resolve([]);
     }
-    return slotsApi.listSlots().then((res) => ({
-      ...res,
-      data: res.data.filter((i) => i.room?.id === roomId),
-    }));
+    return slotsRepo.list().then((data) => data.filter((i) => i.room?.id === roomId));
   }, [houseId, roomId]);
   const slotOptions = useMemo(() => slots ?? [], [slots]);
   const [slotId, setSlotId] = useState<number | undefined>();
@@ -97,16 +92,15 @@ function NewAccommodation() {
       end: endDate.toISOString(),
     };
     setSubmitAccommodationPending(true);
-    accommodationsApi.createAccommodation(createAccommodation)
-      .then((res) => {
+    accommodationsRepo.create(createAccommodation)
+      .then(() => {
         if (!cancelled) {
-          console.log(res);
           navigate('/accommodations');
         }
       })
       .finally(() => { if (!cancelled) { setSubmitAccommodationPending(false); } });
     return () => { cancelled = true; };
-  }, [residentId, slotId, startDate, endDate, accommodationsApi, navigate]);
+  }, [residentId, slotId, startDate, endDate, accommodationsRepo, navigate]);
 
   const isSubmitAvailable = useMemo(
     () => !!residentId && !!houseId && !!roomId && !!slotId && (daysLength ?? 0) > 0,

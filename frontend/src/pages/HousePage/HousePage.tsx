@@ -4,14 +4,13 @@ import { House } from 'coliving-erp-api-client';
 import {
   Grid, LinearProgress, Paper, Typography,
 } from '@mui/material';
-import { useApiFetch } from '../../api/useApiFetch';
-import { useApi } from '../../providers/ApiClient';
+import { useDataFetch } from '../../api/useApiFetch';
 import { BasicHouseForm, BasicHouseFormData } from '../../components/houses/BasicHouseForm';
 import RoomsSection from './RoomsSection';
+import { useServerData } from '../../providers/ServerData';
 
 function HousePage() {
   const { id } = useParams();
-  const { housesApi } = useApi();
   const houseId = useMemo(() => {
     if (id === undefined) { throw new Error('null id'); }
     const numId = parseInt(id, 10);
@@ -21,13 +20,14 @@ function HousePage() {
     return numId;
   }, [id]);
 
-  const [house, housePending] = useApiFetch<House>(() => {
+  const { houses } = useServerData();
+  const [house, housePending] = useDataFetch<House>(() => {
     if (id === undefined) { throw new Error('null id'); }
     const numId = parseInt(id, 10);
     if (Number.isNaN(numId)) {
       throw new Error('can not parse id');
     }
-    return housesApi.get1(numId);
+    return houses.get(numId);
   }, [id]);
 
   const [formData, setFormData] = useState<BasicHouseFormData>();

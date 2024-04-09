@@ -3,11 +3,11 @@ import {
 } from '@mui/material';
 import { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useApi } from '../../providers/ApiClient';
 import { BasicHouseForm, emptyFormData } from '../../components/houses/BasicHouseForm';
+import { useServerData } from '../../providers/ServerData';
 
 function NewHousePage() {
-  const { housesApi } = useApi();
+  const { houses } = useServerData();
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState(emptyFormData());
@@ -15,22 +15,15 @@ function NewHousePage() {
   const [createPending, setCreatePending] = useState(false);
 
   const createHouse = useCallback(() => {
-    let cancelled = false;
     setCreatePending(true);
-    housesApi.createHouse({
-      name: formData.name,
-    })
+    houses.create({ name: formData.name })
       .then(() => {
-        if (!cancelled) {
-          navigate('/houses');
-        }
+        navigate('/houses');
       })
       .finally(() => {
-        if (!cancelled) { setCreatePending(false); }
+        setCreatePending(false);
       });
-
-    return () => { cancelled = true; };
-  }, [formData, housesApi, navigate]);
+  }, [formData, houses, navigate]);
 
   return (
     <Container>

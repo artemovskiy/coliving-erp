@@ -3,6 +3,7 @@ import { useAuth } from 'react-oidc-context';
 import { AppLayout } from '../../layout/AppLayout';
 import { NoLoginLayout } from '../../layout/NoLoginLayout';
 import { FullScreenPending } from '../../common/FullScreenPending';
+import { ServerDataProvider } from '../../../providers/ServerData';
 
 function AuthenticatedWorkspace() {
   const auth = useAuth();
@@ -33,7 +34,9 @@ function AuthenticatedWorkspace() {
   }
 
   return (
-    <AppLayout onLogoutClick={() => auth.removeUser()}><Outlet /></AppLayout>
+    <ServerDataProvider accessToken={auth.user?.access_token as string}>
+      <AppLayout onLogoutClick={() => auth.removeUser()}><Outlet /></AppLayout>
+    </ServerDataProvider>
   );
 }
 

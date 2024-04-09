@@ -10,9 +10,9 @@ import CloseIcon from '@mui/icons-material/Close';
 import { AccommodationDto } from 'coliving-erp-api-client';
 import { DatePicker } from '@mui/x-date-pickers';
 import { format } from 'date-fns';
-import { useApi } from '../../providers/ApiClient';
-import { useApiFetch } from '../../api/useApiFetch';
 import { ProgressButton } from '../../components/common/ProgressButton';
+import { useServerData } from '../../providers/ServerData';
+import { useDataFetch } from '../../api/useApiFetch';
 
 export interface DateSpan {
   start: Date;
@@ -143,10 +143,10 @@ function AccommodationPreview() {
     return t;
   }, [id]);
 
-  const { accommodationsApi } = useApi();
+  const { accommodations } = useServerData();
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [accommodation, accommodationPending, accommodationError, setAccommodation] = useApiFetch(() => {
-    return accommodationsApi.get3(intId);
+  const [accommodation, accommodationPending, accommodationError, setAccommodation] = useDataFetch(() => {
+    return accommodations.get(intId);
   }, [intId]);
 
   const [removeDialogOpen, setRemoveDialogOpen] = useState(false);
@@ -154,7 +154,7 @@ function AccommodationPreview() {
   const [removePending, setRemovePending] = useState(false);
   const removeAccommodation = useCallback(() => {
     setRemovePending(true);
-    accommodationsApi.deleteAccommodation(intId)
+    accommodations.remove(intId)
       .then(() => {
         setRemoveDialogOpen(false);
         // naigate('/accommodations');
@@ -162,18 +162,18 @@ function AccommodationPreview() {
       .finally(() => {
         setRemovePending(false);
       });
-  }, [intId, accommodationsApi]);
+  }, [intId, accommodations]);
 
   const [savePending, setSavePending] = useState(false);
 
   const changeDateSpan = useCallback((value: DateSpan) => {
     setSavePending(true);
-    accommodationsApi.patchAccommodation(intId, {
+    accommodations.patch(intId, {
       startDate: format(value.start, 'yyyy-MM-dd'),
       endDate: format(value.end, 'yyyy-MM-dd'),
     })
       .then((res) => {
-        setAccommodation(res.data);
+        setAccommodation(res);
         navigate(0);
       })
       .finally(() => {

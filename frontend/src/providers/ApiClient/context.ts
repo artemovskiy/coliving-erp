@@ -1,5 +1,5 @@
 import {
-  AccommodationControllerApi, HousesApi, ResidentControllerApi, RoomsApi, SlotsApi, ChessPlateControllerApi, 
+  AccommodationControllerApi, HousesApi, ResidentControllerApi, RoomsApi, SlotsApi, ChessPlateControllerApi,
   ConfigurationControllerApi,
 } from 'coliving-erp-api-client';
 import { createContext, useContext } from 'react';

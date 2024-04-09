@@ -3,11 +3,11 @@ import {
 } from '@mui/material';
 import { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useApi } from '../../providers/ApiClient';
 import { ResidentBasicForm, useEmptyData } from '../../components/resident/ResidentBasicForm';
+import { useServerData } from '../../providers/ServerData';
 
 function NewResident() {
-  const { residentsApi } = useApi();
+  const { residents } = useServerData();
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState(useEmptyData());
@@ -17,7 +17,7 @@ function NewResident() {
   const createResident = useCallback(() => {
     let cancelled = false;
     setCreatePending(true);
-    residentsApi.createResident({
+    residents.create({
       firstName: formData.firstName,
       birthday: formData.birthDate.toISOString(),
     })
@@ -31,7 +31,7 @@ function NewResident() {
       });
 
     return () => { cancelled = true; };
-  }, [formData, residentsApi, navigate]);
+  }, [formData, residents, navigate]);
 
   return (
     <Container>

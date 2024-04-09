@@ -80,7 +80,7 @@ function Accommodations() {
     return currentHouseId ?? houses[0].id;
   }, [houses, currentHouseId]);
 
-  const [chessPlateDate] = useApiFetch(() => chessPlateControllerApi.get1(
+  const [chessPlateDate] = useApiFetch(() => chessPlateControllerApi.get2(
     format(interval.start, 'yyyy-MM-dd'),
     format(interval.end, 'yyyy-MM-dd'),
     currentHouseId,

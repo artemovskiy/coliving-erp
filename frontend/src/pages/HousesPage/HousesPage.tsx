@@ -4,12 +4,12 @@ import {
 import React, { useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { HousesTable } from '../../components/houses/HousesTable';
-import { useApiFetch } from '../../api/useApiFetch';
-import { useApi } from '../../providers/ApiClient';
+import { useDataFetch } from '../../api/useApiFetch';
+import { useServerData } from '../../providers/ServerData';
 
 function HousesPage() {
-  const { housesApi } = useApi();
-  const [houses, housesPending] = useApiFetch(() => housesApi.listHouses(), []);
+  const { houses: housesRepo } = useServerData();
+  const [houses, housesPending] = useDataFetch(() => housesRepo.list(), [housesRepo]);
 
   const navigate = useNavigate();
   const handleRowClick = useCallback((houseId: number) => {

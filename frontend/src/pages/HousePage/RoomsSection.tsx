@@ -12,9 +12,9 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import SaveIcon from '@mui/icons-material/Save';
 import CancelIcon from '@mui/icons-material/Cancel';
-import { useApiFetch } from '../../api/useApiFetch';
-import { useApi } from '../../providers/ApiClient';
+import { useDataFetch } from '../../api/useApiFetch';
 import { ProgressButton } from '../../components/common/ProgressButton';
+import { useServerData } from '../../providers/ServerData';
 
 interface RoomWithSlots {
   id: number;
@@ -32,14 +32,14 @@ function RoomSlotsTable({ roomId, slots }: RoomSlotsTableProps) {
 
   const [newSlotName, setNewSlotName] = useState('');
   const [createPending, setCreatePending] = useState(false);
-  const { slotsApi } = useApi();
+  const { slots: slotsRepo } = useServerData();
   const handleSaveNewSlot = useCallback(() => {
     setCreatePending(true);
     const createSlot: CreateSlot = {
       label: newSlotName,
       roomId,
     };
-    slotsApi.createSlot(createSlot)
+    slotsRepo.create(createSlot)
       .then(() => {
         setNewSlotFromShown(false);
         setNewSlotName('');
@@ -47,7 +47,7 @@ function RoomSlotsTable({ roomId, slots }: RoomSlotsTableProps) {
       .finally(() => {
         setCreatePending(false);
       });
-  }, [newSlotName, slotsApi, roomId]);
+  }, [newSlotName, slotsRepo, roomId]);
 
   return (
     <TableContainer>
@@ -133,7 +133,7 @@ function AddRoomForm({ onCreated, houseId }: AddRoomFormProps) {
   const [name, setName] = useState('');
 
   const [createRoomPending, setCreateRoomPending] = useState(false);
-  const { roomsApi } = useApi();
+  const { rooms: roomsRepo } = useServerData();
   const handleCreateRoomClick = useCallback(() => {
     const cancelled = false;
     const createRoom: CreateRoom = {
@@ -141,13 +141,13 @@ function AddRoomForm({ onCreated, houseId }: AddRoomFormProps) {
       houseId,
     };
     setCreateRoomPending(true);
-    roomsApi.createRoom(createRoom)
-      .then(({ data }) => {
+    roomsRepo.create(createRoom)
+      .then((data) => {
         onCreated(data);
       })
       .finally(() => { setCreateRoomPending(false); });
     return () => cancelled;
-  }, [roomsApi, houseId, onCreated, name]);
+  }, [roomsRepo, houseId, onCreated, name]);
   return (
     <Grid container alignItems="center">
       <Grid item>
@@ -177,17 +177,20 @@ export interface RoomsSectionProps {
 }
 
 function RoomsSection({ houseId } : RoomsSectionProps) {
-  const { roomsApi, slotsApi } = useApi();
+  const { rooms: roomsRepo, slots: slotsRepo } = useServerData();
+  const [rooms, roomsPending] = useDataFetch<Room[]>(
+    () => roomsRepo
+      .list()
+      .then((data) => data.filter((i) => i.house?.id === houseId)),
+    [houseId, roomsRepo],
+  );
 
-  const [rooms, roomsPending] = useApiFetch<Room[]>(() => roomsApi.listRooms().then((res) => ({
-    ...res,
-    data: res.data.filter((i) => i.house?.id === houseId),
-  })), [houseId, roomsApi]);
-
-  const [slots, slotsPending] = useApiFetch<Slot[]>(() => slotsApi.listSlots().then((res) => ({
-    ...res,
-    data: res.data.filter((i) => i.room?.house?.id === houseId),
-  })), [houseId, roomsApi]);
+  const [slots, slotsPending] = useDataFetch<Slot[]>(
+    () => slotsRepo
+      .list()
+      .then((data) => data.filter((i) => i.room?.house?.id === houseId)),
+    [houseId, slotsRepo],
+  );
 
   const roomsWithSlots: RoomWithSlots[] | undefined = useMemo(() => {
     if (!rooms || !slots) {
