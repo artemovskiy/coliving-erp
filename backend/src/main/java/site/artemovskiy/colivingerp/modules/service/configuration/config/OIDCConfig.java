@@ -12,9 +12,6 @@ import org.springframework.validation.annotation.Validated;
 public class OIDCConfig {
     @NotBlank
     public String clientId;
-    @URL
-    @NotBlank
-    public String providerUrl;
 
     public String getClientId() {
         return clientId;
@@ -22,13 +19,5 @@ public class OIDCConfig {
 
     public void setClientId(String clientId) {
         this.clientId = clientId;
-    }
-
-    public String getProviderUrl() {
-        return providerUrl;
-    }
-
-    public void setProviderUrl(String providerUrl) {
-        this.providerUrl = providerUrl;
     }
 }

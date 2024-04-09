@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 import site.artemovskiy.colivingerp.modules.service.configuration.api.dto.ServicePublicConfigDTO;
 import site.artemovskiy.colivingerp.modules.service.configuration.config.OIDCConfig;
 import site.artemovskiy.colivingerp.modules.service.configuration.config.WebConfig;
-
+import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerProperties;
 @RequestMapping("service/configuration")
 @RestController
 public class ConfigurationController {
@@ -18,14 +18,16 @@ public class ConfigurationController {
     @Autowired
     private OIDCConfig oidcConfig;
 
+    @Autowired
+    private OAuth2ResourceServerProperties oAuth2ResourceServerProperties;
+
     @GetMapping
     public ResponseEntity<ServicePublicConfigDTO> get() {
         ServicePublicConfigDTO dto = new ServicePublicConfigDTO();
         dto.baseUrl = webConfig.getBaseUrl();
         dto.oidc = new ServicePublicConfigDTO.ServicePublicOIDCConfigDTO();
         dto.oidc.clientId = oidcConfig.getClientId();
-        ;
-        dto.oidc.providerUrl = oidcConfig.getProviderUrl();
+        dto.oidc.providerUrl = oAuth2ResourceServerProperties.getJwt().getIssuerUri();
         return ResponseEntity.ok(dto);
     }
 }
