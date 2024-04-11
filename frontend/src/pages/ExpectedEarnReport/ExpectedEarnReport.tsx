@@ -2,17 +2,14 @@ import {
   Box, Card, CardHeader, CircularProgress, Container,
   IconButton, Tooltip,
 } from '@mui/material';
-import {
-  useCallback, useMemo, useState,
-} from 'react';
+import { useMemo, useState } from 'react';
 import { format } from 'date-fns';
 import { LineChart } from '@mui/x-charts/LineChart';
 import HouseIcon from '@mui/icons-material/House';
 import { useDataFetch } from '../../api/useApiFetch';
 import { useServerData } from '../../providers/ServerData';
 import { DisplayIntervalPicker } from '../../components/common/DisplayIntervalPicker';
-import { ChooseHouseDialog } from '../../components/common/input/ChooseHouseDialog';
-import { ChooseHouseValue } from '../../components/common/input/ChooseHouseDialog/types';
+import { SmartChooseHouseDialog, SmartChooseHouseValue } from '../../components/common/smart/SmartChooseHouseDialog';
 
 function ExpectedEarnReport() {
   const { expectedEarnReport } = useServerData();
@@ -22,27 +19,16 @@ function ExpectedEarnReport() {
   });
 
   const [isHouseModalOpen, setIsHouseModalOpen] = useState(false);
-  const { houses: houseRepo } = useServerData();
-  const [houses] = useDataFetch(() => houseRepo.list(), []);
-  const [house, setHouse] = useState<ChooseHouseValue>({ all: true });
-  const [houseId, setHouseId] = useState<number | undefined>();
-  const handleChooseHouseApply = useCallback(() => {
-    if (house?.all) {
-      setHouseId(undefined);
-    } else {
-      setHouseId(house?.houseId);
-    }
-    setIsHouseModalOpen(false);
-  }, [house]);
+  const [house, setHouse] = useState<SmartChooseHouseValue>({ all: true });
+
   const [report, reportPending] = useDataFetch(() => {
-    return expectedEarnReport.getByMonthReport({ ...interval, houseId });
-  }, [interval, houseId]);
+    return expectedEarnReport.getByMonthReport({ ...interval, houseId: house.house?.id });
+  }, [interval, house]);
 
   const subTitle = useMemo(() => {
-    if (!houseId) { return 'all houses'; }
-    const houseData = houses?.find((i) => i.id === houseId);
-    return houseData?.name;
-  }, [houseId, houses]);
+    if (house.all) { return 'all houses'; }
+    return house.house?.name;
+  }, [house]);
 
   return (
     <>
@@ -82,14 +68,11 @@ function ExpectedEarnReport() {
           )}
         </Card>
       </Container>
-      <ChooseHouseDialog
-        onChange={setHouse}
+      <SmartChooseHouseDialog
+        onApply={setHouse}
         value={house}
-        onApply={handleChooseHouseApply}
         open={isHouseModalOpen}
         onClose={() => setIsHouseModalOpen(false)}
-        optionsPending={false}
-        options={houses}
         allowChooseAll
       />
     </>

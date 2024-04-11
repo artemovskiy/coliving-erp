@@ -1,20 +1,20 @@
 // @ts-nocheck
-import React, {
-  useEffect, useMemo, useState,
-} from 'react';
+import React, { useMemo, useState } from 'react';
 
 import {
-  Box, Button, FormControl, Grid, MenuItem, Select,
+  Box, Button, IconButton, Tooltip,
 } from '@mui/material';
 import {
   differenceInDays, endOfMonth,
 } from 'date-fns';
 import { Outlet, Link } from 'react-router-dom';
+import HouseIcon from '@mui/icons-material/House';
 import { RoomWithSlots } from './types';
 import AccommodationsMonthTable from './AccommmodationsMonthTable';
 import { useDataFetch } from '../../api/useApiFetch';
 import { useServerData } from '../../providers/ServerData';
 import { DisplayIntervalPicker } from '../../components/common/DisplayIntervalPicker';
+import { SmartChooseHouseDialog, SmartChooseHouseValue } from '../../components/common/smart/SmartChooseHouseDialog';
 
 function Accommodations() {
   const start = new Date(2024, 1, 1);
@@ -24,18 +24,18 @@ function Accommodations() {
 
   const [interval, setInterval] = useState<Interval>({ start, end });
 
-  const { houses: houseRepo, accommodations: accommodationsRepo } = useServerData();
-  const [houses] = useDataFetch(() => houseRepo.list(), []);
-  const [currentHouseId, setCurrentHouseId] = useState<number | undefined>();
-  useEffect(() => { if (houses && houses.length > 0) setCurrentHouseId(houses[0].id); }, [houses]);
-  const curHidSafe = useMemo(() => {
-    if (!houses || houses.length === 0) { return undefined; }
-    return currentHouseId ?? houses[0].id;
-  }, [houses, currentHouseId]);
+  const [isHouseModalOpen, setIsHouseModalOpen] = useState(false);
+  const [house, setHouse] = useState<SmartChooseHouseValue>();
 
-  const [chessPlateDate] = useDataFetch(() => accommodationsRepo.getChessPlate({
-    ...interval, houseId: currentHouseId,
-  }), [interval, currentHouseId]);
+  const { accommodations: accommodationsRepo } = useServerData();
+  const [chessPlateDate] = useDataFetch(() => {
+    if (!house) {
+      return Promise.resolve(undefined);
+    }
+    return accommodationsRepo.getChessPlate({
+      ...interval, houseId: house.house?.id,
+    });
+  }, [interval, house]);
 
   const accommodationsSheet = useMemo(() => {
     if (!chessPlateDate) {
@@ -56,9 +56,9 @@ function Accommodations() {
       });
     const dates = chessPlateDate.headers?.map((h) => h.months?.map((m) => m.days).flat()).flat()
       .map((i) => new Date(i));
-    const house = chessPlateDate.houses![0];
+    const houseData = chessPlateDate.houses![0];
     // @ts-ignore
-    const data: RoomWithSlots[] = house.rooms.map((room) => {
+    const data: RoomWithSlots[] = houseData.rooms.map((room) => {
       const roomSlots = room.slots.map((slot) => ({
         id: slot.id!,
         name: slot.label!,
@@ -86,24 +86,15 @@ function Accommodations() {
   return (
     <>
       <Box>
-        <Grid container alignItems="center">
-          <Grid item>
-            { houses
-      && (
-        <FormControl>
-          <Select value={curHidSafe} onChange={(e) => setCurrentHouseId(e.target.value)}>
-            { houses.map((house) => <MenuItem key={house.id} value={house.id}>{`${house.id} ${house.name}`}</MenuItem>)}
-          </Select>
-        </FormControl>
-      )}
-          </Grid>
-          <Grid item>
-            <DisplayIntervalPicker value={interval} onChange={setInterval} />
-          </Grid>
-          <Grid item>
-            <Button component={Link} to="new">Create</Button>
-          </Grid>
-        </Grid>
+        <Box sx={{ display: 'flex' }}>
+          <Tooltip title="choose house">
+            <IconButton onClick={() => setIsHouseModalOpen(true)} aria-label="choose house">
+              <HouseIcon />
+            </IconButton>
+          </Tooltip>
+          <DisplayIntervalPicker value={interval} onChange={setInterval} />
+          <Button component={Link} to="new">Create</Button>
+        </Box>
 
         { !!accommodationsSheet && (
         <AccommodationsMonthTable
@@ -112,6 +103,12 @@ function Accommodations() {
         />
         )}
       </Box>
+      <SmartChooseHouseDialog
+        onApply={setHouse}
+        value={house}
+        open={isHouseModalOpen}
+        onClose={() => setIsHouseModalOpen(false)}
+      />
       <Outlet />
     </>
 
