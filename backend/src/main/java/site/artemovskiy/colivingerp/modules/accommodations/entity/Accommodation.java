@@ -1,8 +1,9 @@
-package site.artemovskiy.colivingerp.modules.residents.model;
+package site.artemovskiy.colivingerp.modules.accommodations.entity;
 
 import jakarta.persistence.*;
 import site.artemovskiy.colivingerp.modules.accommodations.persistence.QueryResultRow;
 import site.artemovskiy.colivingerp.modules.houses.model.Slot;
+import site.artemovskiy.colivingerp.modules.residents.model.Resident;
 
 import java.time.LocalDate;
 
@@ -39,6 +40,16 @@ public class Accommodation {
     private Slot slot;
     private LocalDate start;
     private LocalDate endDate;
+
+    private int monthlyPrice;
+
+    public int getMonthlyPrice() {
+        return monthlyPrice;
+    }
+
+    public void setMonthlyPrice(int monthlyPrice) {
+        this.monthlyPrice = monthlyPrice;
+    }
 
     public Accommodation(Long id) {
         this.id = id;

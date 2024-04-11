@@ -1,67 +1,20 @@
 // @ts-nocheck
 import React, {
-  useCallback, useEffect, useMemo, useState,
+  useEffect, useMemo, useState,
 } from 'react';
 
 import {
-  Box, FormControl, Grid, IconButton, MenuItem, Select,
+  Box, Button, FormControl, Grid, MenuItem, Select,
 } from '@mui/material';
 import {
-  addMonths,
-  differenceInDays, endOfMonth, format,
+  differenceInDays, endOfMonth,
 } from 'date-fns';
-import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
-import NavigateNextIcon from '@mui/icons-material/NavigateNext';
-import { Outlet } from 'react-router-dom';
+import { Outlet, Link } from 'react-router-dom';
 import { RoomWithSlots } from './types';
 import AccommodationsMonthTable from './AccommmodationsMonthTable';
-import { useApi } from '../../providers/ApiClient';
-import { useApiFetch } from '../../api/useApiFetch';
-
-interface Interval {
-  start: Date;
-  end: Date;
-}
-
-const stepForward = (interval: Interval): Interval => {
-  return {
-    start: addMonths(interval.start, 1),
-    end: addMonths(interval.end, 1),
-  };
-};
-
-const stepBackward = (interval: Interval): Interval => {
-  return {
-    start: addMonths(interval.start, -1),
-    end: addMonths(interval.end, -1),
-  };
-};
-
-interface DisplayIntervalPickerProps {
-  value: Interval;
-  onChange: (value: Interval) => void;
-}
-
-function DisplayIntervalPicker({ value, onChange }: DisplayIntervalPickerProps) {
-  const handleNextClick = useCallback(() => {
-    onChange(stepForward(value));
-  }, [value, onChange]);
-
-  const handleBeforeClick = useCallback(() => {
-    onChange(stepBackward(value));
-  }, [value, onChange]);
-
-  return (
-    <Box>
-      <IconButton onClick={handleBeforeClick}>
-        <NavigateBeforeIcon />
-      </IconButton>
-      <IconButton onClick={handleNextClick}>
-        <NavigateNextIcon />
-      </IconButton>
-    </Box>
-  );
-}
+import { useDataFetch } from '../../api/useApiFetch';
+import { useServerData } from '../../providers/ServerData';
+import { DisplayIntervalPicker } from '../../components/common/DisplayIntervalPicker';
 
 function Accommodations() {
   const start = new Date(2024, 1, 1);
@@ -71,8 +24,8 @@ function Accommodations() {
 
   const [interval, setInterval] = useState<Interval>({ start, end });
 
-  const { housesApi, chessPlateControllerApi } = useApi();
-  const [houses] = useApiFetch(() => housesApi.listHouses(), []);
+  const { houses: houseRepo, accommodations: accommodationsRepo } = useServerData();
+  const [houses] = useDataFetch(() => houseRepo.list(), []);
   const [currentHouseId, setCurrentHouseId] = useState<number | undefined>();
   useEffect(() => { if (houses && houses.length > 0) setCurrentHouseId(houses[0].id); }, [houses]);
   const curHidSafe = useMemo(() => {
@@ -80,11 +33,9 @@ function Accommodations() {
     return currentHouseId ?? houses[0].id;
   }, [houses, currentHouseId]);
 
-  const [chessPlateDate] = useApiFetch(() => chessPlateControllerApi.get2(
-    format(interval.start, 'yyyy-MM-dd'),
-    format(interval.end, 'yyyy-MM-dd'),
-    currentHouseId,
-  ), [interval, currentHouseId]);
+  const [chessPlateDate] = useDataFetch(() => accommodationsRepo.getChessPlate({
+    ...interval, houseId: currentHouseId,
+  }), [interval, currentHouseId]);
 
   const accommodationsSheet = useMemo(() => {
     if (!chessPlateDate) {
@@ -148,6 +99,9 @@ function Accommodations() {
           </Grid>
           <Grid item>
             <DisplayIntervalPicker value={interval} onChange={setInterval} />
+          </Grid>
+          <Grid item>
+            <Button component={Link} to="new">Create</Button>
           </Grid>
         </Grid>
 

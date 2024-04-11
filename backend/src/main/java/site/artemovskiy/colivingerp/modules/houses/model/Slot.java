@@ -1,7 +1,7 @@
 package site.artemovskiy.colivingerp.modules.houses.model;
 
 import jakarta.persistence.*;
-import site.artemovskiy.colivingerp.modules.residents.model.Accommodation;
+import site.artemovskiy.colivingerp.modules.accommodations.entity.Accommodation;
 
 import java.util.Set;
 

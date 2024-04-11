@@ -10,9 +10,9 @@ import site.artemovskiy.colivingerp.modules.accommodations.api.dto.PatchAccommod
 import site.artemovskiy.colivingerp.modules.accommodations.api.mapper.AccommodationMapper;
 import site.artemovskiy.colivingerp.modules.houses.model.Slot;
 import site.artemovskiy.colivingerp.modules.houses.repository.SlotRepository;
-import site.artemovskiy.colivingerp.modules.residents.model.Accommodation;
+import site.artemovskiy.colivingerp.modules.accommodations.entity.Accommodation;
 import site.artemovskiy.colivingerp.modules.residents.model.Resident;
-import site.artemovskiy.colivingerp.modules.residents.repository.AccommodationRepository;
+import site.artemovskiy.colivingerp.modules.accommodations.persistence.AccommodationRepository;
 import site.artemovskiy.colivingerp.modules.residents.repository.ResidentRepository;
 
 import java.util.Collection;
@@ -63,6 +63,7 @@ public class AccommodationController {
         accommodation.setSlot(slot.get());
         accommodation.setStart(body.start);
         accommodation.setEndDate(body.end);
+        accommodation.setMonthlyPrice((int) Math.round(body.monthlyPrice * 100));
         accommodationRepository.save(accommodation);
 
         return ResponseEntity.ok(accommodationMapper.accommodationEntityToDTO(accommodation));
@@ -78,6 +79,7 @@ public class AccommodationController {
         Accommodation entity = accommodation.get();
         entity.setStart(body.startDate);
         entity.setEndDate(body.endDate);
+        entity.setMonthlyPrice((int) Math.round(body.monthlyPrice * 100));
         accommodationRepository.save(entity);
 
         return ResponseEntity.ok(accommodationMapper.accommodationEntityToDTO(entity));

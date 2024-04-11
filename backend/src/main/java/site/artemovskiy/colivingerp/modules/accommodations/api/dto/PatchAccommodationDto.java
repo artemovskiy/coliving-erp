@@ -6,4 +6,6 @@ public class PatchAccommodationDto {
     public LocalDate startDate;
 
     public LocalDate endDate;
+
+    public double monthlyPrice;
 }

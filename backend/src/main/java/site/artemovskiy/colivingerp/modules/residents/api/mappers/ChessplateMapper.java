@@ -8,7 +8,7 @@ import site.artemovskiy.colivingerp.modules.residents.api.dto.AccommodationDto;
 import site.artemovskiy.colivingerp.modules.residents.api.dto.HouseDto;
 import site.artemovskiy.colivingerp.modules.residents.api.dto.RoomDto;
 import site.artemovskiy.colivingerp.modules.residents.api.dto.SlotDto;
-import site.artemovskiy.colivingerp.modules.residents.model.Accommodation;
+import site.artemovskiy.colivingerp.modules.accommodations.entity.Accommodation;
 
 import java.util.Collection;
 import java.util.List;

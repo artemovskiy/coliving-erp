@@ -7,9 +7,6 @@ COPY package*.json ./
 RUN npm install --legacy-peer-deps
 
 COPY . .
-
-RUN ls -l node_modules/coliving-erp-api-client
-
 # Build the React app for production
 RUN npm run build
 

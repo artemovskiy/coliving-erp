@@ -11,4 +11,6 @@ public class CreateAccommodation {
     public LocalDate start;
 
     public LocalDate end;
+
+    public double monthlyPrice;
 }

@@ -29,6 +29,7 @@ public class ChessPlateRepository {
     }
 
     public List<QueryResultRow> getChessPlateData(ChessPlateParams params) {
+        // This query can not be made using JPQL because JOIN ON and JOIN FETCH can not be used together
         Query query = entityManager.createNativeQuery("select " +
                 "h.id as houseId, h.name as houseName, " +
                 "r.id as roomId, r.name as roomName, " +
@@ -40,7 +41,7 @@ public class ChessPlateRepository {
                 "left join slot s on s.room_id = r.id\n" +
                 "left join accommodations a on a.slot_id = s.id and \"start\" <= :periodEnd and end_date >= :periodStart\n" +
                 "left join residents res on res.id = a.resident_id \n" +
-                "where h.id in :houseList\n" +
+                "where h.id in :houseList AND s.id IS NOT NULL\n" +
                 "order by h.id, r.id, s.id, a.\"start\" ", "AccommodationsChessPlateMapper");
         query.setParameter("houseList", params.getHouses());
         query.setParameter("periodStart", toDate(params.getStart()));

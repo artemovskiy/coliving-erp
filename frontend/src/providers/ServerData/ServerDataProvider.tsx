@@ -2,7 +2,8 @@ import React, { useEffect, useMemo } from 'react';
 import axios from 'axios';
 
 import {
-  AccommodationControllerApi, ChessPlateControllerApi, HousesApi, ResidentControllerApi, RoomsApi, SlotsApi,
+  AccommodationControllerApi, ChessPlateControllerApi, ExpectedEarnReportControllerApi,
+  HousesApi, ResidentControllerApi, RoomsApi, SlotsApi,
 } from 'coliving-erp-api-client';
 import { ServerDataContext, serverDataContext } from './context';
 import { HousesRepository } from './houses-repository';
@@ -10,6 +11,7 @@ import { AccommodationsRepository } from './accommodations-repository';
 import { ResidentsRepository } from './residents-repository';
 import { SlotsRepository } from './slots-repository';
 import { RoomsRepository } from './rooms-repository';
+import { ExpectedEarnReportRepo } from './repos/expected-earn-report-repo';
 
 export interface ServerDataProviderProps {
   accessToken: string;
@@ -41,6 +43,7 @@ function ServerDataProvider({ accessToken, children }: ServerDataProviderProps) 
     const residentsApi = new ResidentControllerApi(undefined, '/api', httpClient);
     const roomsApi = new RoomsApi(undefined, '/api', httpClient);
     const chessPlateControllerApi = new ChessPlateControllerApi(undefined, '/api', httpClient);
+    const expectedEarnReport = new ExpectedEarnReportControllerApi(undefined, '/api', httpClient);
 
     return {
       houses: new HousesRepository(housesApi),
@@ -48,6 +51,7 @@ function ServerDataProvider({ accessToken, children }: ServerDataProviderProps) 
       slots: new SlotsRepository(slotsApi),
       rooms: new RoomsRepository(roomsApi),
       residents: new ResidentsRepository(residentsApi),
+      expectedEarnReport: new ExpectedEarnReportRepo(expectedEarnReport),
     };
   }, [httpClient]);
 

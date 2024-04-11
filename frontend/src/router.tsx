@@ -11,6 +11,7 @@ import { NewHousePage } from './pages/NewHouse';
 import { HousePage } from './pages/HousePage';
 import { AccommodationPreviewPage } from './pages/AccommodationPreview';
 import { AuthenticatedWorkspace } from './components/logic/AuthenticatedWorkspace';
+import { ExpectedEarnReportPage } from './pages/ExpectedEarnReport';
 
 const router = createBrowserRouter([
   {
@@ -53,6 +54,10 @@ const router = createBrowserRouter([
       {
         path: '/houses/:id',
         Component: HousePage,
+      },
+      {
+        path: 'reports/expected-earn',
+        Component: ExpectedEarnReportPage,
       },
     ],
   },

@@ -12,4 +12,6 @@ public class AccommodationDto {
     public AccommodationResidentDto resident;
 
     public AccommodationSlotDto slot;
+
+    public String monthlyPrice;
 }

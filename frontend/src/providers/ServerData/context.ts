@@ -4,6 +4,7 @@ import { AccommodationsRepository } from './accommodations-repository';
 import { SlotsRepository } from './slots-repository';
 import { RoomsRepository } from './rooms-repository';
 import { ResidentsRepository } from './residents-repository';
+import { ExpectedEarnReportRepo } from './repos/expected-earn-report-repo';
 
 export interface ServerDataContext {
   houses: HousesRepository;
@@ -11,6 +12,7 @@ export interface ServerDataContext {
   slots: SlotsRepository,
   rooms: RoomsRepository,
   residents: ResidentsRepository;
+  expectedEarnReport: ExpectedEarnReportRepo;
 }
 
 export const serverDataContext = createContext<ServerDataContext | null>(null);

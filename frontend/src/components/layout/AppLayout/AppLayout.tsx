@@ -1,14 +1,10 @@
 import {
-  AppBar, Box, Button, Drawer, IconButton, List, ListItem, ListItemButton,
-  ListItemIcon, ListItemText, Toolbar, Typography, styled,
+  AppBar, Box, Button, Drawer, IconButton,
+  Toolbar, Typography, styled,
 } from '@mui/material';
 import React, { ReactNode, useCallback, useState } from 'react';
 import { Menu as MenuIcon } from '@mui/icons-material';
-import CalendarViewMonthIcon from '@mui/icons-material/CalendarViewMonth';
-import ApartmentIcon from '@mui/icons-material/Apartment';
-import PersonIcon from '@mui/icons-material/Person';
-import HouseIcon from '@mui/icons-material/House';
-import { Link } from 'react-router-dom';
+import { Navigation } from '../Navigation';
 
 export interface AppLayoutProps {
   children?: ReactNode;
@@ -56,104 +52,7 @@ function AppLayout({ children, onLogoutClick }: AppLayoutProps) {
         }}
       >
         <Toolbar />
-        <List>
-          <ListItem disablePadding sx={{ display: 'block' }}>
-            <ListItemButton
-              component={Link}
-              to="/"
-              sx={{
-                minHeight: 48,
-                justifyContent: open ? 'initial' : 'center',
-                px: 2.5,
-              }}
-            >
-              <ListItemIcon
-                sx={{
-                  minWidth: 0,
-                  mr: open ? 3 : 'auto',
-                  justifyContent: 'center',
-                }}
-              >
-                <ApartmentIcon />
-              </ListItemIcon>
-              <ListItemText>
-                Overview
-              </ListItemText>
-            </ListItemButton>
-          </ListItem>
-          <ListItem disablePadding sx={{ display: 'block' }}>
-            <ListItemButton
-              component={Link}
-              to="/accommodations"
-              sx={{
-                minHeight: 48,
-                justifyContent: open ? 'initial' : 'center',
-                px: 2.5,
-              }}
-            >
-              <ListItemIcon
-                sx={{
-                  minWidth: 0,
-                  mr: open ? 3 : 'auto',
-                  justifyContent: 'center',
-                }}
-              >
-                <CalendarViewMonthIcon />
-              </ListItemIcon>
-              <ListItemText>
-                Accommodations
-              </ListItemText>
-            </ListItemButton>
-          </ListItem>
-          <ListItem disablePadding sx={{ display: 'block' }}>
-            <ListItemButton
-              component={Link}
-              to="/residents"
-              sx={{
-                minHeight: 48,
-                justifyContent: open ? 'initial' : 'center',
-                px: 2.5,
-              }}
-            >
-              <ListItemIcon
-                sx={{
-                  minWidth: 0,
-                  mr: open ? 3 : 'auto',
-                  justifyContent: 'center',
-                }}
-              >
-                <PersonIcon />
-              </ListItemIcon>
-              <ListItemText>
-                Residents
-              </ListItemText>
-            </ListItemButton>
-          </ListItem>
-          <ListItem disablePadding sx={{ display: 'block' }}>
-            <ListItemButton
-              component={Link}
-              to="/houses"
-              sx={{
-                minHeight: 48,
-                justifyContent: open ? 'initial' : 'center',
-                px: 2.5,
-              }}
-            >
-              <ListItemIcon
-                sx={{
-                  minWidth: 0,
-                  mr: open ? 3 : 'auto',
-                  justifyContent: 'center',
-                }}
-              >
-                <HouseIcon />
-              </ListItemIcon>
-              <ListItemText>
-                Houses
-              </ListItemText>
-            </ListItemButton>
-          </ListItem>
-        </List>
+        <Navigation />
       </Drawer>
 
       <Box
