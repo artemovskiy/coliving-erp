@@ -18,10 +18,10 @@ public class SecurityConfiguration {
                         .requestMatchers("/service/configuration").permitAll()
                         .requestMatchers("/api-docs/**").permitAll()
                         .requestMatchers("/swagger-ui/**").permitAll()
+                        .requestMatchers("/actuator/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer((oauth2) -> oauth2.jwt(Customizer.withDefaults()));
-        ;
 
         return httpSecurity.build();
     }

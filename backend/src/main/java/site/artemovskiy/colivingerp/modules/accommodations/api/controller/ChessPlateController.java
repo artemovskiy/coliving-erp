@@ -36,6 +36,7 @@ public class ChessPlateController {
         builder.setParams(new ChessPlateParams(startDate, endDate, houseIds));
         builder.loadAccommodations();
         builder.createHeaders();
+        builder.loadUtilization();
         var res = builder.get();
         return ResponseEntity.ok(res);
     }

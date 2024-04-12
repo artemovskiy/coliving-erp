@@ -1,6 +1,7 @@
 package site.artemovskiy.colivingerp.modules.accommodations.entity;
 
 import jakarta.persistence.*;
+import site.artemovskiy.colivingerp.modules.accommodations.persistence.HouseUtilizationQueryResultRow;
 import site.artemovskiy.colivingerp.modules.accommodations.persistence.QueryResultRow;
 import site.artemovskiy.colivingerp.modules.houses.model.Slot;
 import site.artemovskiy.colivingerp.modules.residents.model.Resident;
@@ -27,6 +28,15 @@ import java.time.LocalDate;
                         @ColumnResult(name = "residentFirstName", type = String.class),
                         @ColumnResult(name = "residentBirthDate", type = LocalDate.class),
                 }))
+@SqlResultSetMapping(
+        name = "HouseUtilizationQueryMapper",
+        classes = @ConstructorResult(
+                targetClass = HouseUtilizationQueryResultRow.class,
+                columns = {
+                        @ColumnResult(name = "monthStart", type = LocalDate.class),
+                        @ColumnResult(name = "houseId", type = Long.class),
+                        @ColumnResult(name = "utilization", type = Integer.class),
+                }))
 public class Accommodation {
 
     @Id
@@ -43,19 +53,19 @@ public class Accommodation {
 
     private int monthlyPrice;
 
+    public Accommodation(Long id) {
+        this.id = id;
+    }
+
+    public Accommodation() {
+    }
+
     public int getMonthlyPrice() {
         return monthlyPrice;
     }
 
     public void setMonthlyPrice(int monthlyPrice) {
         this.monthlyPrice = monthlyPrice;
-    }
-
-    public Accommodation(Long id) {
-        this.id = id;
-    }
-
-    public Accommodation() {
     }
 
     public Long getId() {

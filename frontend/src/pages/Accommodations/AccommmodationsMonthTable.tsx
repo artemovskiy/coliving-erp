@@ -2,10 +2,9 @@ import {
   Interval, differenceInCalendarDays, differenceInDays, max, min,
 } from 'date-fns';
 import {
-  Box, IconButton, Paper, Table, TableBody, TableCell, TableContainer,
-  TableHead, TableRow, Toolbar, Tooltip, Typography,
+  Box, Paper, Table, TableBody, TableCell, TableContainer,
+  TableHead, TableRow,
 } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
 import { Link } from 'react-router-dom';
 import React from 'react';
 import { AccommodationData, AccommodationsSheet } from './types';
@@ -66,35 +65,9 @@ const prepareAccommodationCells = (start: Date, end: Date, accommodations: Accom
   return cells;
 };
 
-function AccommodationsTableToolbar() {
-  return (
-    <Toolbar
-      sx={{
-        pl: { sm: 2 },
-        pr: { xs: 1, sm: 1 },
-      }}
-    >
-      <Typography
-        sx={{ flex: '1 1 100%' }}
-        variant="h6"
-        id="tableTitle"
-        component="div"
-      >
-        Accommodations
-      </Typography>
-      <Tooltip title="Add accommodation">
-        <IconButton component={Link} to="new">
-          <AddIcon />
-        </IconButton>
-      </Tooltip>
-    </Toolbar>
-  );
-}
-
 function AccommodationsMonthTable({ data, interval }: { data: AccommodationsSheet, interval: Interval }) {
   return (
     <Paper>
-      <AccommodationsTableToolbar />
       <TableContainer sx={{ width: 1700 }}>
         <Table size="small">
           <TableHead>
@@ -108,7 +81,11 @@ function AccommodationsMonthTable({ data, interval }: { data: AccommodationsShee
                     key={i.isoFirstDay}
                     colSpan={i.length}
                   >
-                    {i.name}
+                    <Box sx={{ display: 'flex' }}>
+                      <Box component="span">{i.name}</Box>
+                      {/* eslint-disable-next-line react/jsx-one-expression-per-line */}
+                      <Box component="span" sx={{ marginLeft: 2 }}> utilization {i.utilization}%</Box>
+                    </Box>
                   </TableCell>
                 ))
               }

@@ -1,14 +1,14 @@
 package site.artemovskiy.colivingerp.modules.residents.api.mappers;
 
 import org.mapstruct.Mapper;
+import site.artemovskiy.colivingerp.modules.accommodations.domain.chessplate.dto.AccommodationDto;
+import site.artemovskiy.colivingerp.modules.accommodations.domain.chessplate.dto.HouseDto;
+import site.artemovskiy.colivingerp.modules.accommodations.domain.chessplate.dto.RoomDto;
+import site.artemovskiy.colivingerp.modules.accommodations.domain.chessplate.dto.SlotDto;
+import site.artemovskiy.colivingerp.modules.accommodations.entity.Accommodation;
 import site.artemovskiy.colivingerp.modules.houses.model.House;
 import site.artemovskiy.colivingerp.modules.houses.model.Room;
 import site.artemovskiy.colivingerp.modules.houses.model.Slot;
-import site.artemovskiy.colivingerp.modules.residents.api.dto.AccommodationDto;
-import site.artemovskiy.colivingerp.modules.residents.api.dto.HouseDto;
-import site.artemovskiy.colivingerp.modules.residents.api.dto.RoomDto;
-import site.artemovskiy.colivingerp.modules.residents.api.dto.SlotDto;
-import site.artemovskiy.colivingerp.modules.accommodations.entity.Accommodation;
 
 import java.util.Collection;
 import java.util.List;

@@ -11,6 +11,8 @@ public class HeaderMonthDto {
 
     public List<LocalDate> days;
 
+    public List<HeaderUtilization> utilization;
+
     public static HeaderMonthDto fromStart(LocalDate start) {
         LocalDate end = start.plusDays(start.lengthOfMonth());
 

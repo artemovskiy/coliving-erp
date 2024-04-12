@@ -2,6 +2,7 @@ export interface ASMonth {
   name: string;
   isoFirstDay: string;
   length: number;
+  utilization: number;
 }
 
 export interface Accommodation {

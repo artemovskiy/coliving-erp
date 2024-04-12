@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import site.artemovskiy.colivingerp.common.time.DateSpan;
 import site.artemovskiy.colivingerp.common.time.DateUtil;
-import site.artemovskiy.colivingerp.modules.houses.model.House;
 import site.artemovskiy.colivingerp.modules.houses.repository.HouseRepository;
 import site.artemovskiy.colivingerp.modules.reports.excpectedearn.api.dto.MonthExpectedEarnReportDto;
 import site.artemovskiy.colivingerp.modules.reports.excpectedearn.api.mapper.ExpectedEarnReportMapper;
@@ -40,23 +39,23 @@ public class ExpectedEarnReportController {
             @RequestParam(name = "house-id", required = false) Integer houseId
     ) {
         LocalDate firstDayOfStartMonth = startDate.withDayOfMonth(1);
-        if(!startDate.isEqual(firstDayOfStartMonth)) {
+        if (!startDate.isEqual(firstDayOfStartMonth)) {
             throw new ValidationException("startDate expected to be the first day of any month");
         }
         LocalDate lastDayOfEndMonth = DateUtil.endOfMonth(endDate);
-        if(!endDate.isEqual(lastDayOfEndMonth)) {
+        if (!endDate.isEqual(lastDayOfEndMonth)) {
             throw new ValidationException("endDate expected to be the last day of any month");
         }
 
-        if(startDate.isAfter(endDate)) {
+        if (startDate.isAfter(endDate)) {
             throw new ValidationException("endDate expected to be greater than startDate");
         }
         DateSpan timeBorders = DateSpan.of(startDate, endDate.plusDays(1));
 
         List<MonthExpectedEarn> result;
-        if(houseId != null) {
+        if (houseId != null) {
             boolean houseExists = houseRepository.existsById(houseId);
-            if(!houseExists) {
+            if (!houseExists) {
                 return ResponseEntity.badRequest().build();
             }
             result = expectedEarnReportDao.getByMonthOfHouse(timeBorders, houseId);

@@ -51,4 +51,39 @@ public class ChessPlateRepository {
 
         return result;
     }
+
+    public List<HouseUtilizationQueryResultRow> getHouseUtilization(ChessPlateParams params) {
+        Query query = entityManager.createNativeQuery("select\n" +
+                "month_start as monthStart," +
+                "r.house_id as houseId," +
+                "sum(" +
+                "   (" +
+                "       (" +
+                "           least(coalesce(a.end_date, month_start), monthend)\\:\\:date" +
+                "           - greatest(month_start, a.\"start\")\\:\\:date" +
+                "       ) * 100 / (monthend\\:\\:date - month_start\\:\\:date)" +
+                "   )" +
+                ") / count(s) as utilization\n" +
+                "from rooms r\n" +
+                "left join slot s on s.room_id  = r.id\n" +
+                "LEFT join (\n" +
+                "   select month_start, month_start + interval '1 month' as monthEnd\n" +
+                "   from (\n" +
+                "       select generate_series(:periodStart\\:\\:timestamp, :periodEnd\\:\\:timestamp, interval '1 month') as month_start\n" +
+                "   ) as month_starts\n" +
+                ") months on 1 = 1\n" +
+                "left join accommodations a on a.end_date >= months.month_start and a.\"start\" <= months.monthEnd and a.slot_id = s.id \n" +
+                "where r.house_id in :houseList\n" +
+                "group by month_start, r.house_id \n" +
+                "having month_start <> :periodEnd\\:\\:date\n" +
+                "order by month_start, r.house_id ", "HouseUtilizationQueryMapper");
+        query.setParameter("houseList", params.getHouses());
+        query.setParameter("periodStart", toDate(params.getStart()));
+        query.setParameter("periodEnd", toDate(params.getEnd()));
+        List<HouseUtilizationQueryResultRow> result = (List<HouseUtilizationQueryResultRow>) query.getResultList();
+
+
+        return result;
+    }
+
 }

@@ -5,6 +5,7 @@ import React, {
 
 import {
   Box, Button, IconButton, Tooltip,
+  Typography,
 } from '@mui/material';
 import {
   differenceInDays, endOfMonth,
@@ -52,6 +53,11 @@ function Accommodations() {
     return { all: false, house: houseEl };
   }, [searchParams, findHouse]);
 
+  const subTitle = useMemo(() => {
+    if (house.all) { return ''; }
+    return house.house?.name;
+  }, [house]);
+
   const setHouse = useCallback((value: SmartChooseHouseValue) => {
     if (value.all === true) {
       setSearchParams((prev) => ({
@@ -84,16 +90,19 @@ function Accommodations() {
       return undefined;
     }
 
-    const months = chessPlateDate.headers?.map((h) => h.months?.map((m) => m.firstDay)).flat()
-      .map((i) => new Date(i))
+    const months = chessPlateDate.headers?.map((h) => h.months).flat()
       .map((i) => {
-        const month = i.toLocaleString('default', { month: 'long' });
-        const endOf = endOfMonth(i);
-        const length = differenceInDays(endOf, i) + 1;
+        const firstDate = new Date(i?.firstDay);
+        const month = firstDate.toLocaleString('default', { month: 'long' });
+        const endOf = endOfMonth(firstDate);
+        const length = differenceInDays(endOf, firstDate) + 1;
+
+        const houseUtilization = i.utilization.find((u) => u.houseId === house.house?.id)?.value;
         return {
           name: month,
-          isoFirstDay: i.toISOString(),
+          isoFirstDay: firstDate.toISOString(),
           length,
+          utilization: houseUtilization,
         };
       });
     const dates = chessPlateDate.headers?.map((h) => h.months?.map((m) => m.days).flat()).flat()
@@ -136,6 +145,10 @@ function Accommodations() {
           </Tooltip>
           <DisplayIntervalPicker value={interval} onChange={setInterval} />
           <Button component={Link} to="new">Create</Button>
+        </Box>
+        <Box>
+          { /* eslint-disable-next-line react/jsx-one-expression-per-line */ }
+          <Typography variant="h2">Accommodations <small>{subTitle}</small></Typography>
         </Box>
 
         { !!accommodationsSheet && (

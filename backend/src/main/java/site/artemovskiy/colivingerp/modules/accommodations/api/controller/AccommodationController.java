@@ -8,11 +8,11 @@ import site.artemovskiy.colivingerp.modules.accommodations.api.dto.Accommodation
 import site.artemovskiy.colivingerp.modules.accommodations.api.dto.CreateAccommodation;
 import site.artemovskiy.colivingerp.modules.accommodations.api.dto.PatchAccommodationDto;
 import site.artemovskiy.colivingerp.modules.accommodations.api.mapper.AccommodationMapper;
+import site.artemovskiy.colivingerp.modules.accommodations.entity.Accommodation;
+import site.artemovskiy.colivingerp.modules.accommodations.persistence.AccommodationRepository;
 import site.artemovskiy.colivingerp.modules.houses.model.Slot;
 import site.artemovskiy.colivingerp.modules.houses.repository.SlotRepository;
-import site.artemovskiy.colivingerp.modules.accommodations.entity.Accommodation;
 import site.artemovskiy.colivingerp.modules.residents.model.Resident;
-import site.artemovskiy.colivingerp.modules.accommodations.persistence.AccommodationRepository;
 import site.artemovskiy.colivingerp.modules.residents.repository.ResidentRepository;
 
 import java.util.Collection;

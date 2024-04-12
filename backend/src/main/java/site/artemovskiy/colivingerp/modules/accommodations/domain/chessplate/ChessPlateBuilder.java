@@ -2,14 +2,10 @@ package site.artemovskiy.colivingerp.modules.accommodations.domain.chessplate;
 
 import site.artemovskiy.colivingerp.common.time.DateSpan;
 import site.artemovskiy.colivingerp.common.time.DateUtil;
-import site.artemovskiy.colivingerp.modules.accommodations.domain.chessplate.dto.ChessPlateDto;
-import site.artemovskiy.colivingerp.modules.accommodations.domain.chessplate.dto.HeaderDto;
+import site.artemovskiy.colivingerp.modules.accommodations.domain.chessplate.dto.*;
 import site.artemovskiy.colivingerp.modules.accommodations.persistence.ChessPlateRepository;
+import site.artemovskiy.colivingerp.modules.accommodations.persistence.HouseUtilizationQueryResultRow;
 import site.artemovskiy.colivingerp.modules.accommodations.persistence.QueryResultRow;
-import site.artemovskiy.colivingerp.modules.residents.api.dto.AccommodationDto;
-import site.artemovskiy.colivingerp.modules.residents.api.dto.HouseDto;
-import site.artemovskiy.colivingerp.modules.residents.api.dto.RoomDto;
-import site.artemovskiy.colivingerp.modules.residents.api.dto.SlotDto;
 import site.artemovskiy.colivingerp.modules.residents.model.Resident;
 
 import java.time.LocalDate;
@@ -17,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ChessPlateBuilder {
 
@@ -108,5 +105,25 @@ public class ChessPlateBuilder {
                     return house;
                 })
                 .toList();
+    }
+
+    public void loadUtilization() {
+        List<HouseUtilizationQueryResultRow> rows = chessPlateRepository.getHouseUtilization(params);
+
+        data.headers.forEach(header -> {
+            header.months.forEach(monthHeader -> {
+                Stream<HouseUtilizationQueryResultRow> filteredStream = rows.stream()
+                        .filter(u -> u.monthStart.equals(monthHeader.firstDay));
+                monthHeader.utilization = filteredStream
+                        .map(u -> {
+                            HeaderUtilization headerUtilization = new HeaderUtilization();
+                            headerUtilization.houseId = u.houseId;
+                            headerUtilization.value = u.utilization;
+                            return headerUtilization;
+                        })
+                        .toList();
+            });
+        });
+
     }
 }

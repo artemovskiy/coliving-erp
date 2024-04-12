@@ -1,14 +1,13 @@
 package site.artemovskiy.colivingerp.modules.accommodations.api.mapper;
 
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import site.artemovskiy.colivingerp.modules.accommodations.api.dto.AccommodationDto;
 import site.artemovskiy.colivingerp.modules.accommodations.api.dto.AccommodationResidentDto;
 import site.artemovskiy.colivingerp.modules.accommodations.api.dto.AccommodationSlotDto;
 import site.artemovskiy.colivingerp.modules.accommodations.api.dto.AccommodationSlotRoomDto;
+import site.artemovskiy.colivingerp.modules.accommodations.entity.Accommodation;
 import site.artemovskiy.colivingerp.modules.houses.model.Room;
 import site.artemovskiy.colivingerp.modules.houses.model.Slot;
-import site.artemovskiy.colivingerp.modules.accommodations.entity.Accommodation;
 import site.artemovskiy.colivingerp.modules.residents.model.Resident;
 
 @Mapper(componentModel = "spring")
