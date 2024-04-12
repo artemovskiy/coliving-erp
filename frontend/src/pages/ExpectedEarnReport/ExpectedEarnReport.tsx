@@ -2,16 +2,23 @@ import {
   Box, Card, CardHeader, CircularProgress, Container,
   IconButton, Tooltip,
 } from '@mui/material';
-import { useMemo, useState } from 'react';
+import {
+  useCallback,
+  useContext, useEffect, useMemo, useState,
+} from 'react';
 import { format } from 'date-fns';
 import { LineChart } from '@mui/x-charts/LineChart';
 import HouseIcon from '@mui/icons-material/House';
+import { useSearchParams } from 'react-router-dom';
 import { useDataFetch } from '../../api/useApiFetch';
 import { useServerData } from '../../providers/ServerData';
 import { DisplayIntervalPicker } from '../../components/common/DisplayIntervalPicker';
 import { SmartChooseHouseDialog, SmartChooseHouseValue } from '../../components/common/smart/SmartChooseHouseDialog';
+import { housesContext, useFind } from '../../components/logic/HousesProvider';
 
 function ExpectedEarnReport() {
+  const { fetchIfNeed: fetchHouses, isFetched: isFetchedHouses } = useContext(housesContext);
+  useEffect(() => fetchHouses(), [fetchHouses]);
   const { expectedEarnReport } = useServerData();
   const [interval, setInterval] = useState({
     start: new Date(2024, 0, 1),
@@ -19,9 +26,33 @@ function ExpectedEarnReport() {
   });
 
   const [isHouseModalOpen, setIsHouseModalOpen] = useState(false);
-  const [house, setHouse] = useState<SmartChooseHouseValue>({ all: true });
+  const [searchParams, setSearchParams] = useSearchParams();
+  const findHouse = useFind();
+  const house: SmartChooseHouseValue = useMemo(() => {
+    const houseIdParam = parseInt(searchParams.get('houseId') ?? '', 10);
+    if (houseIdParam === undefined) {
+      return { all: true };
+    }
+    const houseEl = findHouse(houseIdParam);
+    if (!houseEl) return { all: true };
+    return { all: false, house: houseEl };
+  }, [searchParams, findHouse]);
 
+  const setHouse = useCallback((value: SmartChooseHouseValue) => {
+    if (value.all === true) {
+      setSearchParams((prev) => ({
+        ...prev,
+        houseId: undefined,
+      }));
+    } else {
+      setSearchParams((prev) => ({
+        ...prev,
+        houseId: value.house?.id,
+      }));
+    }
+  }, [setSearchParams]);
   const [report, reportPending] = useDataFetch(() => {
+    if (!isFetchedHouses) { return Promise.resolve(undefined); }
     return expectedEarnReport.getByMonthReport({ ...interval, houseId: house.house?.id });
   }, [interval, house]);
 
