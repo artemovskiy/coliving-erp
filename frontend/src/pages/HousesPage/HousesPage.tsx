@@ -1,15 +1,14 @@
 import {
   Button, CircularProgress, Container, Grid, Paper, Typography,
 } from '@mui/material';
-import React, { useCallback } from 'react';
+import React, { useCallback, useContext, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { HousesTable } from '../../components/houses/HousesTable';
-import { useDataFetch } from '../../api/useApiFetch';
-import { useServerData } from '../../providers/ServerData';
+import { housesContext } from '../../components/logic/HousesProvider';
 
 function HousesPage() {
-  const { houses: housesRepo } = useServerData();
-  const [houses, housesPending] = useDataFetch(() => housesRepo.list(), [housesRepo]);
+  const { data: houses, isPending: housesPending, fetchIfNeed: fetchHouses } = useContext(housesContext);
+  useEffect(() => fetchHouses(), [fetchHouses]);
 
   const navigate = useNavigate();
   const handleRowClick = useCallback((houseId: number) => {

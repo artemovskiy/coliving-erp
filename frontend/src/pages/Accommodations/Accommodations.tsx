@@ -1,5 +1,7 @@
 // @ts-nocheck
-import React, { useMemo, useState } from 'react';
+import React, {
+  useContext, useEffect, useMemo, useState,
+} from 'react';
 
 import {
   Box, Button, IconButton, Tooltip,
@@ -15,6 +17,7 @@ import { useDataFetch } from '../../api/useApiFetch';
 import { useServerData } from '../../providers/ServerData';
 import { DisplayIntervalPicker } from '../../components/common/DisplayIntervalPicker';
 import { SmartChooseHouseDialog, SmartChooseHouseValue } from '../../components/common/smart/SmartChooseHouseDialog';
+import { housesContext, useFirst } from '../../components/logic/HousesProvider';
 
 function Accommodations() {
   const start = new Date(2024, 1, 1);
@@ -26,6 +29,17 @@ function Accommodations() {
 
   const [isHouseModalOpen, setIsHouseModalOpen] = useState(false);
   const [house, setHouse] = useState<SmartChooseHouseValue>();
+
+  const { fetchIfNeed: fetchHouses } = useContext(housesContext);
+  useEffect(() => fetchHouses(), [fetchHouses]);
+
+  const firstHouse = useFirst();
+  // selects the first house when houses fetched
+  useEffect(() => {
+    if (firstHouse) {
+      setHouse({ all: false, house: firstHouse });
+    }
+  }, [firstHouse]);
 
   const { accommodations: accommodationsRepo } = useServerData();
   const [chessPlateDate] = useDataFetch(() => {

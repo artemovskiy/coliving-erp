@@ -1,8 +1,9 @@
-import { useCallback, useEffect, useState } from 'react';
-import { useDataFetch } from '../../../../api/useApiFetch';
-import { useServerData } from '../../../../providers/ServerData';
+import {
+  useCallback, useContext, useEffect, useState,
+} from 'react';
 import { ChooseHouseDialog, ChooseHouseValue } from '../../input/ChooseHouseDialog';
 import { SmartChooseHouseValue } from './types';
+import { housesContext } from '../../../logic/HousesProvider';
 
 export interface SmartChooseHouseDialogProps {
   open: boolean;
@@ -15,8 +16,12 @@ export interface SmartChooseHouseDialogProps {
 function SmartChooseHouseDialog({
   open, value, allowChooseAll, onApply, onClose,
 }: SmartChooseHouseDialogProps) {
-  const { houses: houseRepo } = useServerData();
-  const [houses, housesPending] = useDataFetch(() => houseRepo.list(), []);
+  const { data: houses, isPending: housesPending, fetchIfNeed } = useContext(housesContext);
+  useEffect(() => {
+    if (open) return fetchIfNeed();
+    return () => {};
+  }, [fetchIfNeed, open]);
+
   const [internalValue, setInternalValue] = useState<ChooseHouseValue | undefined>();
   const handleChooseHouseApply = useCallback(() => {
     if (internalValue) {

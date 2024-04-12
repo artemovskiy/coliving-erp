@@ -4,6 +4,7 @@ import { AppLayout } from '../../layout/AppLayout';
 import { NoLoginLayout } from '../../layout/NoLoginLayout';
 import { FullScreenPending } from '../../common/FullScreenPending';
 import { ServerDataProvider } from '../../../providers/ServerData';
+import { HousesProvider } from '../HousesProvider';
 
 function AuthenticatedWorkspace() {
   const auth = useAuth();
@@ -35,7 +36,9 @@ function AuthenticatedWorkspace() {
 
   return (
     <ServerDataProvider accessToken={auth.user?.access_token as string}>
-      <AppLayout onLogoutClick={() => auth.removeUser()}><Outlet /></AppLayout>
+      <HousesProvider>
+        <AppLayout onLogoutClick={() => auth.removeUser()}><Outlet /></AppLayout>
+      </HousesProvider>
     </ServerDataProvider>
   );
 }
