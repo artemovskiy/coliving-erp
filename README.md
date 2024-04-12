@@ -1,5 +1,9 @@
 # This is a (very) simple ERP for coliving projects
 
+### App demo
+The application has a public available demo deployment
+[https://demo-coliving.artemovskiy.me](https://demo-coliving.artemovskiy.me) username/password: demo/demo
+
 ### What is coliving
 Coliving is an organisation of sharing an estate(flat or house) among several people, who are comfortable to live togetther. Together we can get a better house and lower priсe per person.
 It is almost same with getting an rent appartment with friednds, but assumes inviting new people.
